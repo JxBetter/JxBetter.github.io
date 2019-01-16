@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="上次遗留了两个问题,先说一下自己的看法    问题:1.明明一个线程只能处理一个请求,那么栈里的元素永远是在栈顶,那为什么需要用栈这个结构?用普通变量不行吗.2._request_ctx_stack和_app_ctx_stack都是线程隔离的,那么为什么要分开?  我认为在web runtime的情况下是可以不需要栈这个结构的,即使是单线程下也不需要,原本我以为在单线程下,当前一个请求阻塞后,">
+<meta name="keywords" content="flask,python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用服务器与WSGI协议以及flask后端框架总结(后端接收请求返回响应的整个流程)">
+<meta property="og:url" content="http://yoursite.com/2019/01/14/应用服务器与WSGI协议以及flask后端框架总结-后端接收请求返回响应的整个流程/index.html">
+<meta property="og:site_name" content="Easythink">
+<meta property="og:description" content="上次遗留了两个问题,先说一下自己的看法    问题:1.明明一个线程只能处理一个请求,那么栈里的元素永远是在栈顶,那为什么需要用栈这个结构?用普通变量不行吗.2._request_ctx_stack和_app_ctx_stack都是线程隔离的,那么为什么要分开?  我认为在web runtime的情况下是可以不需要栈这个结构的,即使是单线程下也不需要,原本我以为在单线程下,当前一个请求阻塞后,">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-16T04:33:53.214Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="应用服务器与WSGI协议以及flask后端框架总结(后端接收请求返回响应的整个流程)">
+<meta name="twitter:description" content="上次遗留了两个问题,先说一下自己的看法    问题:1.明明一个线程只能处理一个请求,那么栈里的元素永远是在栈顶,那为什么需要用栈这个结构?用普通变量不行吗.2._request_ctx_stack和_app_ctx_stack都是线程隔离的,那么为什么要分开?  我认为在web runtime的情况下是可以不需要栈这个结构的,即使是单线程下也不需要,原本我以为在单线程下,当前一个请求阻塞后,">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/14/应用服务器与WSGI协议以及flask后端框架总结-后端接收请求返回响应的整个流程/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>应用服务器与WSGI协议以及flask后端框架总结(后端接收请求返回响应的整个流程) | Easythink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Easythink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/14/应用服务器与WSGI协议以及flask后端框架总结-后端接收请求返回响应的整个流程/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="顾金鑫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Easythink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">应用服务器与WSGI协议以及flask后端框架总结(后端接收请求返回响应的整个流程)
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-14 10:29:59" itemprop="dateCreated datePublished" datetime="2019-01-14T10:29:59+08:00">2019-01-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-16 12:33:53" itemprop="dateModified" datetime="2019-01-16T12:33:53+08:00">2019-01-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">9.7k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">9 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<ol>
+<li><p>上次遗留了两个问题,先说一下自己的看法  </p>
+<hr>
+<p>问题:<br>1.明明一个线程只能处理一个请求,那么栈里的元素永远是在栈顶,那为什么需要用栈这个结构?用普通变量不行吗.<br>2._request_ctx_stack和_app_ctx_stack都是线程隔离的,那么为什么要分开?</p>
+<hr>
+<p>我认为在web runtime的情况下是可以不需要栈这个结构的,即使是单线程下也不需要,原本我以为在单线程下,当前一个请求阻塞后,后一个请求还会被推入栈中,结果并不是这样,这也就说明了,栈的结构和是不是单线程没关系,为了验证这点,我写了个简单的接口验证这点:</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt;         from flask import Flask,_request_ctx_stack</span><br><span class="line">&gt;         </span><br><span class="line">&gt;         app = Flask(__name__)</span><br><span class="line">&gt;         </span><br><span class="line">&gt;         </span><br><span class="line">&gt;         @app.route(&apos;/&apos;)</span><br><span class="line">&gt;         def index():</span><br><span class="line">&gt;             print(_request_ctx_stack._local.__storage__)</span><br><span class="line">&gt;             time.sleep(1)</span><br><span class="line">&gt;             return &apos;&lt;h1&gt;hello&lt;/h1&gt;&apos;</span><br><span class="line">&gt;         </span><br><span class="line">&gt;         app.run(port=3000)</span><br><span class="line">&gt;         -------------------------------------------</span><br><span class="line">&gt;         def wsgi_app(self, environ, start_response):</span><br><span class="line">&gt;         </span><br><span class="line">&gt;             ctx = self.request_context(environ)</span><br><span class="line">&gt;             ctx.push()</span><br><span class="line">&gt;             print(_request_ctx_stack._local.__storage__)</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>我在Flask类中的wsgi\_app()方法中加了这一句print(\_request\_ctx\_stack.\_local.\_\_storage__),wsgi_app()是后端接收应用服务器发来的包装好的WSGI请求的函数,后面会讲到,由于一个线程只能处理一个请求,所以结果应该是栈中永远只有一个请求对象,在路由接口中我延时了1秒,假设成阻塞,看一下结果:
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;          * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)</span><br><span class="line">&gt;         &#123;139851542578944: &#123;&apos;stack&apos;: []&#125;&#125;</span><br><span class="line">&gt;         127.0.0.1 - - [14/Apr/2018 14:31:17] &quot;GET / HTTP/1.1&quot; 200 -</span><br><span class="line">&gt;         &#123;139851542578944: &#123;&apos;stack&apos;: []&#125;&#125;</span><br><span class="line">&gt;         127.0.0.1 - - [14/Apr/2018 14:31:18] &quot;GET / HTTP/1.1&quot; 200 -</span><br><span class="line">&gt;         &#123;139851542578944: &#123;&apos;stack&apos;: []&#125;&#125;</span><br><span class="line">&gt;         127.0.0.1 - - [14/Apr/2018 14:31:19] &quot;GET / HTTP/1.1&quot; 200 -</span><br><span class="line">```  </span><br><span class="line">&gt;     </span><br><span class="line">&gt;     每次栈中只有一个请求对象,这也就说明了栈这个结构和web runtime下的单线程无关,那么就剩下非web runtime的情况了,最常见的是离线测试:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>from flask import Flask,_request_ctx_stack,_app_ctx_stack
+
+
+app = Flask(__name__)
+app2 = Flask(__name__)
+
+
+def offline_test():
+    with app.app_context():
+        print(_app_ctx_stack._local.__storage__)
+        with app2.app_context():
+            print(_app_ctx_stack._local.__storage__)
+
+    with app.app_context():
+        with app.test_request_context():
+            print(_request_ctx_stack._local.__storage__)
+            with app.test_request_context():
+                print(_request_ctx_stack._local.__storage__)
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     离线测试是单线程的,通过这个例子也能得到第二的问题的答案,为什么要将请求和应用分开,一个原因是flask支持多个app共存,这需要用到中间件,另一个原因是离线测试时,有可能只需要用到应用上下文,所以需要将两者分开,在离线测试时如果进行了嵌套则栈结构的特点就发挥了出来,看一下运行的结果:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>{140402410657536: {&apos;stack&apos;: []}}
+{140402410657536: {&apos;stack&apos;: [, ]}}
+{140402410657536: {&apos;stack&apos;: []}}
+{140402410657536: {&apos;stack&apos;: [, ]}}
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     结果显而易见  </span><br><span class="line">&gt;     总结一下:栈结构和分离请求和应用是为了离线测试更加灵活</span><br><span class="line">&gt;     </span><br><span class="line">&gt;     * * *</span><br><span class="line">&gt;     </span><br><span class="line">&gt; 2.  web应用服务器 WSGI 后端之间的关系  </span><br><span class="line">&gt;     web应用服务器的作用是监听端口,当接收到客户端的请求后将请求转化成WSGI格式(environ)然后传给后端框架  </span><br><span class="line">&gt;     应用服务器&lt;----WSGI协议----&gt;后端框架  </span><br><span class="line">&gt;     WSGI是应用服务器和后端框架之间的桥梁,使得服务器和后端框架分离,各司其职,程序员也能专注于自己的逻辑  </span><br><span class="line">&gt;     在WSGI中规定了每个python web应用都需要是一个可调用的对象,即实现了\_\_call\_\_这个特殊方法,Flask就是一个可调用对象</span><br><span class="line">&gt; </span><br><span class="line">&gt; * * *</span><br><span class="line">&gt; </span><br><span class="line">&gt; 4.  web应用服务器从哪里将包装好的请求发送给后端  </span><br><span class="line">&gt;     在flask中使用了werkzeug这个工具包,在werkzeug.serving中有一个类,class WSGIRequestHandler(BaseHTTPRequestHandler, object)  </span><br><span class="line">&gt;     这个类提供了environ字典对象,定义了start\_response()和run\_wsgi()方法,在run_wsgi()中有一个execute(),看一下源码:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>def execute(app):
+    application_iter = app(environ, start_response)  #从这里发送到后端
+    try:
+        for data in application_iter:
+            write(data)
+        if not headers_sent:
+            write(b&apos;&apos;)
+    finally:
+        if hasattr(application_iter, &apos;close&apos;):
+            application_iter.close()
+        application_iter = None
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     第一句application\_iter = app(environ, start\_response)就调用了Flask.\_\_call\_\_(),并将environ, start\_response传入,而Flask.\_\_call__()就return了self.wsgi_app(),  </span><br><span class="line">&gt;     这个wsgi\_app(environ, start\_response)是一个标准的请求处理函数,所以它就是整个后端处理请求的入口函数,environ是一个包含所有HTTP请求信息的字典对象,start\_response是一个发送HTTP响应的函数,environ是从应用服务器传过来的,start\_response是定义好的,这些都不需要后端开发人员关心  </span><br><span class="line">&gt;     总结一下:  </span><br><span class="line">&gt;     1.WSGI规定了后端处理函数的格式,即需要接受environ,start_response这两个参数,这两个参数从应用服务器传给后端框架  </span><br><span class="line">&gt;     2.python web应用对象需要是可调用的,即实现了\_\_call\_\_方法,返回WSGI规定格式的后端处理函数来处理请求及返回响应  </span><br><span class="line">&gt;     3.应用服务器会使用werkzeug.serving中的WSGIRequestHandler类中的相应方法,将http请求转化成WSGI格式,所以说werkzeug是一个遵循WSGI协议的工具包,提供给应用服务器使用  </span><br><span class="line">&gt;     </span><br><span class="line">&gt; </span><br><span class="line">&gt; * * *</span><br><span class="line">&gt; </span><br><span class="line">&gt; 6.  后端处理请求返回响应整个流程  </span><br><span class="line">&gt;     之前说到,后端处理请求的入口函数是wsgi\_app(self,environ,start\_response),先看下源码:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>def wsgi_app(self, environ, start_response):
+    ctx = self.request_context(environ)  #1
+    ctx.push()  #2
+    error = None
+    try:
+        try:
+            response = self.full_dispatch_request()  #3
+        except Exception as e:
+            error = e
+            response = self.handle_exception(e)
+        except:
+            error = sys.exc_info()[1]
+            raise
+        return response(environ, start_response)
+    finally:
+        if self.should_ignore_error(error):
+            error = None
+        ctx.auto_pop(error)
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     其中有三句比较关键,我写了序号  </span><br><span class="line">&gt;     第一句:self.request\_context(environ),看下request\_context这个方法:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>def request_context(self, environ):
+    return RequestContext(self, environ)
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     简而言之,传入environ,初始化一个请求上下文对象并返回  </span><br><span class="line">&gt;     第二句:ctx.push(),看下源码:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>def push(self):
+    top = _request_ctx_stack.top
+    if top is not None and top.preserved:
+        top.pop(top._preserved_exc)
+
+    app_ctx = _app_ctx_stack.top
+    if app_ctx is None or app_ctx.app != self.app:
+        app_ctx = self.app.app_context()
+        app_ctx.push()
+        self._implicit_app_ctx_stack.append(app_ctx)
+    else:
+        self._implicit_app_ctx_stack.append(None)
+
+    if hasattr(sys, &apos;exc_clear&apos;):
+        sys.exc_clear()
+
+    _request_ctx_stack.push(self)
+
+    self.session = self.app.open_session(self.request)
+    if self.session is None:
+        self.session = self.app.make_null_session()
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     简而言之,推入应用上下文和请求上下文,如果设置了secret_key则开启一个session,关于flask的session放到后面说  </span><br><span class="line">&gt;     第三句:self.full\_dispatch\_request(),是处理请求的关键函数,看下源码:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>def full_dispatch_request(self):
+    &quot;&quot;&quot;Dispatches the request and on top of that performs request
+    pre and postprocessing as well as HTTP exception catching and
+    error handling.
+
+    .. versionadded:: 0.7
+    &quot;&quot;&quot;
+    self.try_trigger_before_first_request_functions()
+    try:
+        request_started.send(self)
+        rv = self.preprocess_request()  #function1
+        if rv is None:
+            rv = self.dispatch_request()  #function2
+    except Exception as e:
+        rv = self.handle_user_exception(e)
+    return self.finalize_request(rv)  #function3
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     这个函数中嵌套了另外三个函数,预处理函数preprocess\_request(),主处理函数dispatch\_request()和最终处理函数finalize_request(rv)  </span><br><span class="line">&gt;     1.preprocess\_request()是处理被before\_request装饰器装饰的函数  </span><br><span class="line">&gt;     2.dispatch_request()匹配请求的URL,并返回视图函数的返回值rv  </span><br><span class="line">&gt;     3.finalize\_request(rv)接受视图函数的返回值,并生成响应,这里有make\_response和process\_response这两个函数,make\_response生成响应对象,process_response对响应做一些处理,比如后面要讲到的session  </span><br><span class="line">&gt;     响应生成后,在wsgi\_app中return response,最后调用ctx.auto\_pop()将请求和应用上下文推出栈,return的response会通过start_response发送到应用服务器,并由其发送到客户端,这样一次请求就结束了.</span><br><span class="line">&gt; </span><br><span class="line">&gt; * * *</span><br><span class="line">&gt; </span><br><span class="line">&gt; 8.  最后说说session  </span><br><span class="line">&gt;     flask中的session是client side session,说白了就是session会封装在cookie中在最终响应时会发送给客户端,而在服务器本地不会存储,所以叫作client side session,要使用session需要设置secret\_key这个配置,通过app.secret\_key来设置,用来验证签名,等到下次客户端发来带有cookie的请求时,后端就能从生成对应的session中解析出带有的信息,写个简单的应用来看下session怎么用:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>from flask import Flask,session
+
+
+app = flask.Flask(__name__)
+app.secret_key = &apos;gjx&apos;
+
+
+@app.route(&apos;/&apos;)
+def index():
+    if &apos;name&apos; in session:
+        print(session[&apos;name&apos;])
+    else:
+        print(&apos;stranger&apos;)
+    return &apos;&lt;h1&gt;/&lt;/h1&gt;&apos;
+
+
+@app.route(&apos;/&apos;)
+def test(name):
+    session[&apos;name&apos;] = name
+    print(&apos;session set successful&apos;)
+    return &apos;&lt;h1&gt;test&lt;/h1&gt;&apos;
+
+
+app.run(port=3000)
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     跑起来后,在浏览器输入127.0.0.1:3000/,会打印出stranger,  </span><br><span class="line">&gt;     然后访问127.0.0.1:3000/jx后,后端打印出session set successful,并且浏览器会收到服务器发来的cookie,  </span><br><span class="line">&gt;     Set-Cookie:session=eyJuYW1lIjoiangifQ.DbNHuQ.MPZLWzoLdga2SPMg0plMYmKlJMc; HttpOnly; Path=/ 这是我测试时收到的,有三个字段,第一个是session的内容,第二个是时间戳,第三个是验证信息  </span><br><span class="line">&gt;     这时已经设置好了session,并且得到了cookie,再次访问127.0.0.1:3000/,后端打印出了jx,就是之前设置的值  </span><br><span class="line">&gt;     如果对session内的值更改,则返回的cookie也会更改,那么在那保存,在那创建session呢?  </span><br><span class="line">&gt;     之前在分析后端请求流程是提到了,在RequestContext的push方法最后:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>self.session = self.app.open_session(self.request)
+if self.session is None:
+    self.session = self.app.make_null_session()
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;     </span><br><span class="line">&gt;     如果设置了secret\_key则会执行open\_session开启一个session,那如果更改了在哪里保存呢?  </span><br><span class="line">&gt;     在finalize\_request执行的self.process\_response中:</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<pre><code>def process_response(self, response):
+    ctx = _request_ctx_stack.top
+    bp = ctx.request.blueprint
+    funcs = ctx._after_request_functions
+    if bp is not None and bp in self.after_request_funcs:
+        funcs = chain(funcs, reversed(self.after_request_funcs[bp]))
+    if None in self.after_request_funcs:
+        funcs = chain(funcs, reversed(self.after_request_funcs[None]))
+    for handler in funcs:
+        response = handler(response)
+    if not self.session_interface.is_null_session(ctx.session):
+        self.save_session(ctx.session, response)
+    return response
+</code></pre><p><code>`</code></p>
+<pre><code>在最后判断如果session不是null session的话会执行self.save\_session来保存更新session,在self.save\_session中会调用response.set_cookie,flask中的session大概就是这样
+</code></pre><p>总结一下:<br>1.分析了应用服务器封装好的environ从哪发送给后端<br>2.分析了应用服务器 WSGI 后端之间的关系以及WSGI协议对接口的标准定义,使得后端人员只需要关心自己的逻辑<br>3.分析了后端接收到应用服务器发来的WSGI请求之后的一系列处理流程,主要函数是wsgi_app(environ,start_response)<br>4.最后简单分析了flask中的session机制,它是client side session的.</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/flask/" rel="tag"><i class="fa fa-tag"></i>
+ flask</a>
+          
+            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i>
+ python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/14/flask如何开启多线程详解/" rel="next" title="flask如何开启多线程详解">
+                <i class="fa fa-chevron-left"></i> flask如何开启多线程详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/14/python标准库-threading/" rel="prev" title="python标准库--threading">
+                python标准库--threading <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">顾金鑫</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">EasyThink By jx</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">95k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">1:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

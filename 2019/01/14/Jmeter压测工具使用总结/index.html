@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1、常用测试工具对比                                                 1、loadrunner                    性能稳定，压测结果及细粒度大，可以自定义脚本进行压测，但是太过于重大，功能比较繁多                2、apache ab(单接口压测最方便)">
+<meta name="keywords" content="测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jmeter压测工具使用总结">
+<meta property="og:url" content="http://yoursite.com/2019/01/14/Jmeter压测工具使用总结/index.html">
+<meta property="og:site_name" content="Easythink">
+<meta property="og:description" content="1、常用测试工具对比                                                 1、loadrunner                    性能稳定，压测结果及细粒度大，可以自定义脚本进行压测，但是太过于重大，功能比较繁多                2、apache ab(单接口压测最方便)">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-16T04:33:53.213Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jmeter压测工具使用总结">
+<meta name="twitter:description" content="1、常用测试工具对比                                                 1、loadrunner                    性能稳定，压测结果及细粒度大，可以自定义脚本进行压测，但是太过于重大，功能比较繁多                2、apache ab(单接口压测最方便)">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/14/Jmeter压测工具使用总结/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Jmeter压测工具使用总结 | Easythink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Easythink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/14/Jmeter压测工具使用总结/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="顾金鑫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Easythink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Jmeter压测工具使用总结
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-14 13:47:27" itemprop="dateCreated datePublished" datetime="2019-01-14T13:47:27+08:00">2019-01-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-16 12:33:53" itemprop="dateModified" datetime="2019-01-16T12:33:53+08:00">2019-01-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/软件测试/" itemprop="url" rel="index"><span itemprop="name">软件测试</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">12k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">11 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote><br><ul><br>            <li><br>                <h1>1、常用测试工具对比</h1><br>                                 <blockquote><br>                1、loadrunner<br>                    性能稳定，压测结果及细粒度大，可以自定义脚本进行压测，但是太过于重大，功能比较繁多<br><br><br>                2、apache ab(单接口压测最方便)<br>                    模拟多线程并发请求,ab命令对发出负载的计算机要求很低，既不会占用很多CPU，也不会占用太多的内存，但却会给目标服务器造成巨大的负载, 简单DDOS攻击等<br><br><br>                3、webbench<br>                    webbench首先fork出多个子进程，每个子进程都循环做web访问测试。子进程把访问的结果通过pipe告诉父进程，父进程做最终的统计结果。<br><br>                <br><br>                                </blockquote><br>            </li><br><br><li><br>                <h1>2、Jmeter目录文件讲解</h1><br>                <blockquote><br>                    bin:核心可执行文件，包含配置<br><br>                        jmeter.bat: windows启动文件：<br><br>                        jmeter: mac或者linux启动文件：<br><br>                        jmeter-server：mac或者Liunx分布式压测使用的启动文件<br><br>                        jmeter-server.bat：mac或者Liunx分布式压测使用的启动文件<br><br>                        jmeter.properties: 核心配置文件<br><br>                        <br><br><br><br>                    extras：插件拓展的包<br><br>                    lib:核心的依赖包<br><br>                        ext:核心包<br><br>                        junit:单元测试包<br><br>                </blockquote><br>            </li><br><br><li><br>                <h1>3、Jmeter基础功能组件介绍线程组和Sampler</h1><br>                <blockquote><br>                    1、添加-&gt;threads-&gt;线程组（控制总体并发）<br><br>                        线程数：虚拟用户数。一个虚拟用户占用一个进程或线程<br><br>                        <br><br>                        准备时长（Ramp-Up Period(in seconds)）：全部线程启动的时长，比如100个线程，20秒，则表示20秒内100个线程都要启动完成，每秒启动5个线程<br><br><br>                        循环次数：每个线程发送的次数，假如值为5，100个线程，则会发送500次请求，可以勾选永远循环<br><br>                        <br><br><br><br>                    2、线程组-&gt;添加-&gt; Sampler(采样器) -&gt; Http <br>（一个线程组下面可以增加几个Sampler）<br><br>                        名称：采样器名称<br><br>                        注释：对这个采样器的描述<br><br>                        <br><br>                        web服务器：<br><br>                            默认协议是http<br><br>                            默认端口是80<br><br>                            服务器名称或IP ：请求的目标服务器名称或IP地址<br><br>                        <br><br>                        路径：服务器URL<br><br>                        <br><br>                        Use multipart/from-data for HTTP POST ：当发送POST请求时，使用Use multipart/from-data方法发送，默认不选中。<br><br><br>                        <br><br>                    3、查看测试结果<br><br>                        线程组-&gt;添加-&gt;监听器-&gt;察看结果树<br><br>                        <br><br>                </blockquote><br>            </li><br><br>            <li><br>                <h1>4、Jmeter的断言基本使用</h1><br>                <blockquote><br>                    增加断言: 线程组 -&gt; 添加 -&gt; 断言 -&gt; 响应断言  <br><br>                        apply to(应用范围):<br><br>                        <blockquote><br>                            Main sample only: 仅当前父取样器 <br>进行断言，一般一个请求，如果发一个请求会触发多个，则就有sub <br>sample（比较少用）<br><br>                        </blockquote><br>                        要测试的响应字段：<br><br>                        <blockquote><br>                            响应文本：即响应的数据，比如json等文本<br><br>                            响应代码：http的响应状态码，比如200，302，404这些<br><br>                            响应信息：http响应代码对应的响应信息，例如：OK, Found<br><br>                            Response Header: 响应头<br><br>                        </blockquote><br>                        模式匹配规则：<br><br>                        <blockquote><br>                            包括：是响应文本的一个子集，是包含关系，可以用正则表达式<br><br>                            匹配：使用正则表达式匹配<br><br>                            equals：完全与响应文本相同，不能使用正则表达式<br><br>                            substring：也是包含关系，但是不能使用正则表达式<br>                        </blockquote><br>                </blockquote><br>                2、断言结果监听器: 线程组-&gt; 添加 -&gt; 监听器 -&gt; 断言结果<br><br>                <blockquote><br>                    里面的内容是sampler采样器的名称<br><br>                    断言失败，查看结果树任务结果颜色标红<br>通过结果数里面双击不通过的记录，可以看到错误信息)<br><br>                </blockquote><br>                3、每个sample下面可以加单独的结果树，然后同时加多个断言，最外层可以加个结果树进行汇总<br><br>            </li><br><br><li><br>                <h1>5、结果聚合报告分析</h1><br>                新增聚合报告：线程组-&gt;添加-&gt;监听器-&gt;聚合报告（Aggregate Report）<br><br>                    <blockquote><br>                        lable: sampler的名称<br><br>                        Samples: 一共发出去多少请求,例如10个用户，循环10次，则是 100<br><br>                        Average: 平均响应时间<br><br>                        Median: 中位数，也就是 50％ 用户的响应时间<br><br><br>                        90% Line : 90％ 用户的响应不会超过该时间 （90% of the samples took no more than this time. The remaining samples at least as long as this）<br><br>                        95% Line : 95％ 用户的响应不会超过该时间<br><br>                        99% Line : 99％ 用户的响应不会超过该时间<br><br>                        min : 最小响应时间<br><br>                        max : 最大响应时间<br><br>                        <br><br>                        Error%：错误的请求的数量/请求的总数<br><br>                        Throughput： 吞吐量——默认情况下表示每秒完成的请求数（Request per Second) 可类比为qps<br><br>                        KB/Sec: 每秒接收数据量<br><br>                    </blockquote><br>            </li><br><br><li><br>                <h1>6、Jmeter用户自定义变量</h1><br>                <blockquote><br>                    1、线程组-&gt;add -&gt; Config Element(配置原件)-&gt; User Definde Variable（用户定义的变量）<br><br><br>                    2、引用方式${XXX}，在接口中变量中使用<br><br>                </blockquote><br>            </li><br><br><li><br>                <h1>7、CSV数据文件使用</h1><br>                <blockquote><br>                    1、线程组-&gt;add -&gt; Config Element(配置原件)-&gt; CSV data set config (CSV数据文件设置)<br><br>                    2、如果是多个参数需要同时引用，则在CSV数据文件里面设置加多个字段 Variabled names(comma-delitited):  csv_name,csv_pwd<br><br>                </blockquote><br>            </li><br><br><li><br>                <h1>8、数据库压测操作</h1><br>                <blockquote><br>                    配置讲解：<br><br>                    <blockquote><br>                        1、Thread Group -&gt; add -&gt; sampler -&gt; jdbc request 添加数据库请求<br><br>                        2、jar包添加  mysql-connector-java-5.1.30.jar<br>                        添加连接数据库的jar包<br><br>                        3、JDBC connection Configuration 配置<br><br>                        <blockquote><br>                            JDBC request-&gt;add -&gt; config element -&gt; JDBC connection configuration<br><br><br>                                <blockquote><br>                                    核心配置<br><br>                                    <ul><br>                                        <li><br>                                            Max Number of connections : 最大连接数<br><br>                                        </li><br>                                        <li><br>                                            MAX wait :最大等待时间<br><br>                                            Auto Commit: 是否自动提交事务<br><br>                                        </li><br>                                        <li><br>                                            DataBase URL : 数据库连接地址 jdbc:mysql://127.0.0.1:3306/blog<br>                                        </li><br>                                        <li><br>                                            JDBC Driver Class : 数据库驱动，选择对应的mysql<br><br>                                        </li><br>                                        <li><br>                                            username:数据库用户名<br><br>                                        </li><br>                                        <li><br>                                            password:数据库密码<br><br>                                        </li><br>                                    </ul><br>                                </blockquote><br>                        </blockquote><br>                    </blockquote><br>                    数据库语句：<br><br>                    <blockquote><br>                            1、Debug Sampler使用（结果树中查看）<br>                                Thread Group -&gt; add -&gt; sampler -&gt; debug sampler<br><br><br>                            2、参数讲解：(sql结尾不要加”;”)<br><br>                                1、variable name of pool declared in JDBC connection configuration（和配置文件同名）<br><br>                                2、Query Type 查询类型<br><br>                                3、parameter values 参数值<br><br>                                4、parameter types  参数类型<br><br>                                5、variable names  sql执行结果变量名<br><br>                                6、result variable names 所有结果当做一个对象存储<br>                                7、query timeouts  查询超时时间 <br><br>                                8、 handle results  处理结果集<br><br>                    </blockquote><br>                </blockquote><br>            </li><br><br><li><br>                <h1>9、Jmeter非GUI界面参数</h1><br>                <blockquote><br>                     -h 帮助<br><br>                    -n 非GUI模式<br><br>                    -t 指定要运行的 JMeter 测试脚本文件<br><br>                    -l 记录结果的文件 每次运行之前，(要确保之前没有运行过,即xxx.jtl不存在，不然报错)<br><br>                    -r Jmter.properties文件中指定的所有远程服务器<br><br>                    -e 在脚本运行结束后生成html报告<br><br>                    -o 用于存放html报告的目录（目录要为空，不然报错）<br><br>                </blockquote><br>                 官方配置文件地址 <a href="http://jmeter.apache.org/usermanual/get-started.html" rel="noopener" target="_blank">http://jmeter.apache.org/usermanual/get-started.html</a><br><br>                 <br><br>            </li><br><br><li><br>                <h1>10、Jmeter压测接口的性能优化</h1><br>                <blockquote><br>                    1、使用非GUI模式：jmeter -n -t test.jmx -l result.jtl<br><br>                    2、少使用Listener， 如果使用-l参数，它们都可以被删除或禁用。<br><br>                    3、在加载测试期间不要使用“查看结果树”或“查看结果”表监听器，只能在脚本阶段使用它们来调试脚本。<br><br>                    4、包含控制器在这里没有帮助，因为它将文件中的所有测试元素添加到测试计划中。<br><br>                    5、不要使用功能模式,使用CSV输出而不是XML<br><br>                    6、只保存你需要的数据,尽可能少地使用断言<br><br>                    7、如果测试需要大量数据，可以提前准备好测试数据放到数据文件中，以CSV Read方式读取。<br><br>                    8、用内网压测，减少其他带宽影响压测结果<br><br>                    9、如果压测大流量，尽量用多几个节点以非GUI模式向服务器施压<br><br>                </blockquote><br>            </li><br><li><br>                <h1>11、Jmeter图形化HTML压测报告dashboard</h1><br>                <blockquote><br>                    1、Test and Report informations<br><br>                    <blockquote><br>                        Source file：jtl文件名<br><br>                        Start Time ：压测开始时间<br><br>                        End Time ：压测结束时间<br><br>                        Filter for display：过滤器<br><br>                        Lable:sampler采样器名称  <br><br>                    </blockquote><br>                    2、APDEX(Application performance Index)<br><br>                    <blockquote><br>                        apdex:应用程序性能指标,范围在0~1之间，1表示达到所有用户均满意<br><br>                        T(Toleration threshold)：可接受阀值<br><br>                        F(Frustration threshold)：失败阀值<br><br>                    </blockquote><br>                    3、Requests Summary 请求总结<br><br>                    <blockquote><br>                        OK:成功率<br><br>                        KO:失败率<br><br>                    </blockquote><br>                    4、Statistics 统计数据<br><br>                    <blockquote><br>                        lable:sampler采样器名称<br><br><br>                        samples:请求总数，并发数*循环次数<br><br>                        KO:失败次数<br><br>                        Error%:失败率<br><br><br>                        Average:平均响应时间<br><br>                        Min:最小响应时间<br><br>                        Max:最大响应时间<br><br>                        90th pct: 90%的用户响应时间不会超过这个值（关注这个就可以了）<br>                        2ms,3ms,4,5,2,6,8,3,9<br><br><br>                        95th pct: 95%的用户响应时间不会超过这个值<br><br>                        99th pct: 99%的用户响应时间不会超过这个值 (存在极端值)<br><br>                        throughtput:Request per Second吞吐量 qps<br><br><br>                        received:每秒从服务器接收的数据量<br><br>                        send：每秒发送的数据量<br><br>                    </blockquote><br>                </blockquote><br>            </li><br><br><li><br>                <h1>12、Jmeter图形化HTML压测报告Charts报表讲解</h1><br>                <blockquote><br>                        1、Over Time（随着时间的变化）<br><br>                        <blockquote><br>                            Response Times Over Time：响应时间变化趋势<br><br>                            Response Time Percentiles Over Time (successful responses)：最大，最小，平均，用户响应时间分布<br><br>                            Active Threads Over Time：并发用户数趋势<br><br>                            Bytes Throughput Over Time：每秒接收和请求字节数变化，蓝色表示发送，黄色表示接受<br><br>                            Latencies Over Time：平均响应延时趋势<br><br>                            Connect Time Over Time  ：连接耗时趋势<br><br>                        </blockquote><br>                            2、Throughput<br><br>                            <blockquote><br>                                Hits Per Second (excluding embedded resources):每秒点击次数<br><br>                                Codes Per Second (excluding embedded resources)：每秒状态码数量<br><br>                                Transactions Per Second：即TPS，每秒事务数<br><br>                                Response Time Vs Request：响应时间和请求数对比<br><br>                                Latency Vs Request：延迟时间和请求数对比<br><br>                            </blockquote><br>                            3、Response Times<br><br>                            <blockquote><br>                                Response Time Percentiles：响应时间百分比<br><br>                                Response Time Overview：响应时间概述<br><br>                                Time Vs Threads：活跃线程数和响应时间<br><br>                                Response Time Distribution：响应时间分布图<br><br>                            </blockquote><br>                </blockquote><br>            </li><br><br><li><br>                <h1>13、Jmeter压测注意事项</h1><br>                <blockquote><br>                    the firewalls on the systems are turned off or correct ports are opened.<br><br>                    系统上的防火墙被关闭或正确的端口被打开。<br><br>                    <br><br>                    all the clients are on the same subnet.<br><br>                    所有的客户端都在同一个子网上。<br><br>                    <br><br>                    the server is in the same subnet, if 192.x.x.x or 10.x.x.x IP addresses are used. If the server doesn’t use 192.xx or 10.xx IP address, there shouldn’t be any problems.<br><br>                    如果使用192.x.x.x或10.x.x.x IP地址，则服务器位于同一子网中。 如果服务器不使用192.xx或10.xx IP地址，则不应该有任何问题。<br><br>                    <br><br>                    Make sure JMeter can access the server.<br><br>                    确保JMeter可以访问服务器。<br><br>                    <br><br>                    Make sure you use the same version of JMeter and Java on all the systems. Mixing versions will not work correctly.<br><br>                    确保在所有系统上使用相同版本的JMeter和Java。 <br>混合版本将无法正常工作。<br><br>                    <br><br>                    You have setup SSL for RMI or disabled it.<br><br>                    您已为RMI设置SSL或将其禁用。<br><br>                    <br><br>                    <br><br>                    官网地址 <a href="http://jmeter.apache.org/usermanual/jmeter_distributed_testing_step_by_step.html" rel="noopener" target="_blank">http://jmeter.apache.org/usermanual/jmeter_distributed_testing_step_by_step.html</a><br><br><br>                    压测注意事项：一定要用内网IP，不用用公网IP<br><br>                </blockquote><br>            </li><br></ul><br></blockquote>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/测试/" rel="tag"><i class="fa fa-tag"></i>
+ 测试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/14/【软件测试】负载测试、压力测试的区别/" rel="next" title="【软件测试】负载测试、压力测试的区别">
+                <i class="fa fa-chevron-left"></i> 【软件测试】负载测试、压力测试的区别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/14/selenium中的window-handle/" rel="prev" title="selenium中的window handle">
+                selenium中的window handle <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">顾金鑫</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">1、常用测试工具对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">2、Jmeter目录文件讲解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">3、Jmeter基础功能组件介绍线程组和Sampler</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">4、Jmeter的断言基本使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">5、结果聚合报告分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">6.</span> <span class="nav-text">6、Jmeter用户自定义变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">7.</span> <span class="nav-text">7、CSV数据文件使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">8.</span> <span class="nav-text">8、数据库压测操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">9.</span> <span class="nav-text">9、Jmeter非GUI界面参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">10.</span> <span class="nav-text">10、Jmeter压测接口的性能优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">11.</span> <span class="nav-text">11、Jmeter图形化HTML压测报告dashboard</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">12.</span> <span class="nav-text">12、Jmeter图形化HTML压测报告Charts报表讲解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">13.</span> <span class="nav-text">13、Jmeter压测注意事项</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">EasyThink By jx</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">95k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">1:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文是我在学习flask中对上下文和几个类似全局变量的思考和研究，也有我自己的理解在内。   为了研究flask中的current_app、g、request、session，我找到定义在global.py的源码：1234567`# context locals_request_ctx_stack = LocalStack()_app_ctx_stack = LocalStack()curren">
+<meta name="keywords" content="flask,python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask中current_app、g、request、session源码的深究和理解">
+<meta property="og:url" content="http://yoursite.com/2019/01/14/flask中current-app、g、request、session源码的深究和理解/index.html">
+<meta property="og:site_name" content="Easythink">
+<meta property="og:description" content="本文是我在学习flask中对上下文和几个类似全局变量的思考和研究，也有我自己的理解在内。   为了研究flask中的current_app、g、request、session，我找到定义在global.py的源码：1234567`# context locals_request_ctx_stack = LocalStack()_app_ctx_stack = LocalStack()curren">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-16T04:33:53.213Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="flask中current_app、g、request、session源码的深究和理解">
+<meta name="twitter:description" content="本文是我在学习flask中对上下文和几个类似全局变量的思考和研究，也有我自己的理解在内。   为了研究flask中的current_app、g、request、session，我找到定义在global.py的源码：1234567`# context locals_request_ctx_stack = LocalStack()_app_ctx_stack = LocalStack()curren">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/14/flask中current-app、g、request、session源码的深究和理解/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>flask中current_app、g、request、session源码的深究和理解 | Easythink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Easythink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/14/flask中current-app、g、request、session源码的深究和理解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="顾金鑫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Easythink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">flask中current_app、g、request、session源码的深究和理解
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-14 10:05:01" itemprop="dateCreated datePublished" datetime="2019-01-14T10:05:01+08:00">2019-01-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-16 12:33:53" itemprop="dateModified" datetime="2019-01-16T12:33:53+08:00">2019-01-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">4.7k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">4 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本文是我在学习flask中对上下文和几个类似全局变量的思考和研究，也有我自己的理解在内。  </p>
+<p>为了研究flask中的current_app、g、request、session，我找到定义在global.py的源码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">`# context locals</span><br><span class="line">_request_ctx_stack = LocalStack()</span><br><span class="line">_app_ctx_stack = LocalStack()</span><br><span class="line">current_app = LocalProxy(_find_app)</span><br><span class="line">request = LocalProxy(partial(_lookup_req_object, &apos;request&apos;))</span><br><span class="line">session = LocalProxy(partial(_lookup_req_object, &apos;session&apos;))</span><br><span class="line">g = LocalProxy(partial(_lookup_app_object, &apos;g&apos;))`</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>可以看到主要由_lookup_req_object、_lookup_app_object、_find_app等组成，我先来分析request和session<br>其实request和session原理上是一样的，所以将其归为一类，称为请求上下文。  </p>
+<p>我们从最里面看起，partial(_lookup_req_object, ‘request’)，最外层是一个偏函数，不过这不是重点，它主要是将’request’传给_lookup_req_object，没有其他含义， 顺着_lookup_req_object找到它的源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">     `def _lookup_req_object(name):</span><br><span class="line">     top = _request_ctx_stack.top</span><br><span class="line">     if top is None:</span><br><span class="line">         raise RuntimeError(_request_ctx_err_msg)</span><br><span class="line">     return getattr(top, name)` </span><br><span class="line">``` </span><br><span class="line">&gt; </span><br><span class="line">&gt; 从最后的return可以看到，这个函数的主要功能是从top中取出键值为&apos;request&apos;的内容，top是一个字典，top从\_request\_ctx\_stack.top中来，在上面的源码中 \_request\_ctx\_stack = LocalStack()，从名字来看LocalStack应该是一个栈类，应该有pop,push,top方法，我继续找到源码：</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<pre><code>``def __init__(self):
+    self._local = Local()
+...
+...
+def push(self, obj):
+    &quot;&quot;&quot;Pushes a new item to the stack&quot;&quot;&quot;
+    rv = getattr(self._local, &apos;stack&apos;, None)
+    if rv is None:
+        self._local.stack = rv = []
+    rv.append(obj)
+    return rv
+
+def pop(self):
+    &quot;&quot;&quot;Removes the topmost item from the stack, will return the
+    old value or `None` if the stack was already empty.
+    &quot;&quot;&quot;
+    stack = getattr(self._local, &apos;stack&apos;, None)
+    if stack is None:
+        return None
+    elif len(stack) == 1:
+        release_local(self._local)
+        return stack[-1]
+    else:
+        return stack.pop()
+
+@property
+def top(self):
+    &quot;&quot;&quot;The topmost item on the stack.  If the stack is empty,
+    `None` is returned.
+    &quot;&quot;&quot;
+    try:
+        return self._local.stack[-1]
+    except (AttributeError, IndexError):
+        return None`` 
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; </span><br><span class="line">&gt; 可以看到LocalStack()这个类有一个属性self._local = Local()，对应另一个类，继续看源码：</span><br></pre></td></tr></table></figure>
+<pre><code>`
+def __init__(self):
+    object.__setattr__(self, &apos;__storage__&apos;, {})
+    object.__setattr__(self, &apos;__ident_func__&apos;, get_ident)
+...
+...
+def __getattr__(self, name):
+    try:
+        return self.__storage__[self.__ident_func__()][name]
+    except KeyError:
+        raise AttributeError(name)
+
+def __setattr__(self, name, value):
+    ident = self.__ident_func__()
+    storage = self.__storage__
+    try:
+        storage[ident][name] = value
+    except KeyError:
+        storage[ident] = {name: value}
+`         
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; </span><br><span class="line">&gt; 我截取了几个重要的函数，LocalStack()中的push，用到了Local()中的\_\_setattr\_\_();pop用到了\_\_getattr\_\_()，看到push和pop都是对&apos;stack&apos;这个键值进行查询和赋值，我们转到Local()这个类中，这个类有两个实例属性，\_\_storage\_\_和\_\_ident\_func__，前者是一个字典，后者是一个函数，我们看一下这个get_ident函数，查看源码：</span><br></pre></td></tr></table></figure>
+<pre><code>`def get_ident(): # real signature unknown; restored from __doc__
+    &quot;&quot;&quot;
+    get_ident() -&gt; integer
+
+    Return a non-zero integer that uniquely identifies the current thread
+    amongst other threads that exist simultaneously.
+    This may be used to identify per-thread resources.
+    Even though on some platforms threads identities may appear to be
+    allocated consecutive numbers starting at 1, this behavior should not
+    be relied upon, and the number should be seen purely as a magic cookie.
+    A thread&apos;s identity may be reused for another thread after it exits.
+    &quot;&quot;&quot;
+    return 0` 
+</code></pre><p><code>`</code>  </p>
+<blockquote>
+<p>显然这个函数不是python写的，<a href="http://因为它来自_thread.py" target="_blank" rel="noopener">因为它来自_thread.py</a>，是一个底层库，从名字可以猜到和线程有关，根据描述，它返回一个非零整数，代表了当前线程id，我们再看看__setattr__这个方法，它其实是一个字典嵌套列表再嵌套字典的数据，__storage__是一个字典，它里面的键值被赋值为当前线程id，这个键值对应的值是另一个字典:{‘stack’:[‘request’:r_val,’session’:s_val]}，这样和前面联系起来就很好理解了，Local()中的__storage__存储的格式为{thread_id:{‘stack’:[‘request’:r_val,’session’:s_val]}}，LocalStack()中的top方法，返回了’stack’中最后一个加入的元素，也就是最新的元素，我自己理解为服务器接受的最新的请求，在框架外看起来request和session是一个全局变量，其实内部已经由进程id将其分隔开了，即使同时有多个请求过来，进程间的数据也不会混乱。  </p>
+<p>同理current_app和g也一样，唯一不同的是，current_app、g和request、session是两个不同的实例，注意前面 _request_ctx_stack = LocalStack()、_app_ctx_stack = LocalStack()，所以’stack’中存的数据也不一样，current_app和g称为应用上下文，两者还是有区别的。<br>LocalProxy 则是一个典型的代理模式实现，它在构造时接受一个 callable 的参数（比如一个函数），这个参数被调用后的返回值本身应该是一个 Thread Local 对象。对一个 LocalProxy 对象的所有操作，包括属性访问、方法调用（当然方法调用就是属性访问）甚至是二元操作，都会转发到那个 callable 参数返回的 Thread Local 对象上。<br>LocalProxy 的一个使用场景是 LocalStack 的 __call__ 方法。比如 my_local_stack 是一个 LocalStack 实例，那么 my_local_stack() 能返回一个 LocalProxy 对象，这个对象始终指向 my_local_stack 的栈顶元素。如果栈顶元素不存在，访问这个 LocalProxy 的时候会抛出 RuntimeError。<br>需要注意的是，如果需要离线编程，尤其在写测试代码时，需要将应用上下文push到栈中去，不然current_app会指向空的_app_ctx_stack栈顶，自然也就无法工作了。<br>我们可以通过current_app的值来判断是否进入应用上下文中，可以用app.app_context().push()来进入应用上下文。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/flask/" rel="tag"><i class="fa fa-tag"></i>
+ flask</a>
+          
+            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i>
+ python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/14/从app-route装饰器引发对endpoint的思考/" rel="next" title="从app.route装饰器引发对endpoint的思考">
+                <i class="fa fa-chevron-left"></i> 从app.route装饰器引发对endpoint的思考
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/14/flask如何开启多线程详解/" rel="prev" title="flask如何开启多线程详解">
+                flask如何开启多线程详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">顾金鑫</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">EasyThink By jx</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">95k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">1:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

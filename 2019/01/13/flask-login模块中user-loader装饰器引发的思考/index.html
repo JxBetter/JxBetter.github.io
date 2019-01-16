@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="flask_login模块中user_loader装饰器引发的思考今天看书遇到了flask login模块中的信号机制，看到user_loader这个装饰器时有些疑惑，为什么需要这个装饰器呢，先看一下源码： 12345678910def user_loader(self, callback):        &amp;apos;&amp;apos;&amp;apos;        This sets the callb">
+<meta name="keywords" content="flask,web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask_login模块中user_loader装饰器引发的思考">
+<meta property="og:url" content="http://yoursite.com/2019/01/13/flask-login模块中user-loader装饰器引发的思考/index.html">
+<meta property="og:site_name" content="Easythink">
+<meta property="og:description" content="flask_login模块中user_loader装饰器引发的思考今天看书遇到了flask login模块中的信号机制，看到user_loader这个装饰器时有些疑惑，为什么需要这个装饰器呢，先看一下源码： 12345678910def user_loader(self, callback):        &amp;apos;&amp;apos;&amp;apos;        This sets the callb">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-16T04:33:53.213Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="flask_login模块中user_loader装饰器引发的思考">
+<meta name="twitter:description" content="flask_login模块中user_loader装饰器引发的思考今天看书遇到了flask login模块中的信号机制，看到user_loader这个装饰器时有些疑惑，为什么需要这个装饰器呢，先看一下源码： 12345678910def user_loader(self, callback):        &amp;apos;&amp;apos;&amp;apos;        This sets the callb">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/13/flask-login模块中user-loader装饰器引发的思考/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>flask_login模块中user_loader装饰器引发的思考 | Easythink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Easythink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/13/flask-login模块中user-loader装饰器引发的思考/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="顾金鑫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Easythink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">flask_login模块中user_loader装饰器引发的思考
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-13 17:15:13" itemprop="dateCreated datePublished" datetime="2019-01-13T17:15:13+08:00">2019-01-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-16 12:33:53" itemprop="dateModified" datetime="2019-01-16T12:33:53+08:00">2019-01-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">5.7k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">5 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="flask-login模块中user-loader装饰器引发的思考"><a href="#flask-login模块中user-loader装饰器引发的思考" class="headerlink" title="flask_login模块中user_loader装饰器引发的思考"></a>flask_login模块中user_loader装饰器引发的思考</h1><p>今天看书遇到了flask login模块中的信号机制，看到user_loader这个装饰器时有些疑惑，为什么需要这个装饰器呢，先看一下源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def user_loader(self, callback):</span><br><span class="line">        &apos;&apos;&apos;</span><br><span class="line">        This sets the callback for reloading a user from the session. The</span><br><span class="line">        function you set should take a user ID (a ``unicode``) and return a</span><br><span class="line">        user object, or ``None`` if the user does not exist.</span><br><span class="line">        :param callback: The callback for retrieving a user object.</span><br><span class="line">        :type callback: callable</span><br><span class="line">        &apos;&apos;&apos;</span><br><span class="line">        self.user_callback = callback</span><br><span class="line">        return callback</span><br></pre></td></tr></table></figure>
+<p>看到这不禁疑惑，它的作用只是将被它包装的函数存到self.user_callback这个属性中去，我们先到login_user这个登陆函数中去看看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">    def login_user(user, remember=False, duration=None, force=False, fresh=True):</span><br><span class="line">        if not force and not user.is_active:</span><br><span class="line">            return False</span><br><span class="line"> </span><br><span class="line">        user_id = getattr(user, current_app.login_manager.id_attribute)()</span><br><span class="line">        session[&apos;user_id&apos;] = user_id</span><br><span class="line">        session[&apos;_fresh&apos;] = fresh</span><br><span class="line">        session[&apos;_id&apos;] = current_app.login_manager._session_identifier_generator()</span><br><span class="line"> </span><br><span class="line">        if remember:</span><br><span class="line">            session[&apos;remember&apos;] = &apos;set&apos;</span><br><span class="line">            if duration is not None:</span><br><span class="line">                try:</span><br><span class="line">                    # equal to timedelta.total_seconds() but works with Python 2.6</span><br><span class="line">                    session[&apos;remember_seconds&apos;] = (duration.microseconds +</span><br><span class="line">                                                   (duration.seconds +</span><br><span class="line">                                                    duration.days * 24 * 3600) *</span><br><span class="line">                                                   10**6) / 10.0**6</span><br><span class="line">                except AttributeError:</span><br><span class="line">                    raise Exception(&apos;duration must be a datetime.timedelta, &apos;</span><br><span class="line">                                    &apos;instead got: &#123;0&#125;&apos;.format(duration))</span><br><span class="line"> </span><br><span class="line">        _request_ctx_stack.top.user = user</span><br><span class="line">        user_logged_in.send(current_app._get_current_object(), user=_get_user())</span><br><span class="line">        return True</span><br></pre></td></tr></table></figure>
+<p>可以看到，login_user这个函数接受user这个主要的参数，getattr(user, current_app.login_manager.id_attribute)()这句是为了调用user中的get_id方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">self.id_attribute = ID_ATTRIBUTE</span><br><span class="line">ID_ATTRIBUTE = &apos;get_id&apos;</span><br></pre></td></tr></table></figure></p>
+<p>注意在getattr后面还有个()所以会调用对应的方法，所以user_id中就存放了登陆用户的id号，并写入到session中去，如果设置了remember为True的话，关掉浏览器重新打开后，用户不会退出，函数的最后_request_ctx_stack.top.user = user，将当前user加入到请求上下文的栈顶，就能用current_user获取了。<br>上面说到self.user_callback已经存了被user_loader装饰的函数，那么在哪里用到了它呢，我在login_manager.py中查找，发现只有一个方法使用到了这个熟悉，这个方法是reload_user()：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">    def reload_user(self, user=None):</span><br><span class="line">        &apos;&apos;&apos;</span><br><span class="line">        This set the ctx.user with the user object loaded by your customized</span><br><span class="line">        user_loader callback function, which should retrieved the user object</span><br><span class="line">        with the user_id got from session.</span><br><span class="line">        Syntax example:</span><br><span class="line">        from flask_login import LoginManager</span><br><span class="line">        @login_manager.user_loader</span><br><span class="line">        def any_valid_func_name(user_id):</span><br><span class="line">            # get your user object using the given user_id,</span><br><span class="line">            # if you use SQLAlchemy, for example:</span><br><span class="line">            user_obj = User.query.get(int(user_id))</span><br><span class="line">            return user_obj</span><br><span class="line">        Reason to let YOU define this self.user_callback:</span><br><span class="line">            Because we won&apos;t know how/where you will load you user object.</span><br><span class="line">        &apos;&apos;&apos;</span><br><span class="line">        ctx = _request_ctx_stack.top</span><br><span class="line"> </span><br><span class="line">        if user is None:</span><br><span class="line">            user_id = session.get(&apos;user_id&apos;)</span><br><span class="line">            if user_id is None:</span><br><span class="line">                ctx.user = self.anonymous_user()</span><br><span class="line">            else:</span><br><span class="line">                if self.user_callback is None:</span><br><span class="line">                    raise Exception(</span><br><span class="line">                        &quot;No user_loader has been installed for this &quot;</span><br><span class="line">                        &quot;LoginManager. Refer to&quot;</span><br><span class="line">                        &quot;https://flask-login.readthedocs.io/&quot;</span><br><span class="line">                        &quot;en/latest/#how-it-works for more info.&quot;)</span><br><span class="line">                user = self.user_callback(user_id)</span><br><span class="line">                if user is None:</span><br><span class="line">                    ctx.user = self.anonymous_user()</span><br><span class="line">                else:</span><br><span class="line">                    ctx.user = user</span><br><span class="line">        else:</span><br><span class="line">            ctx.user = user</span><br></pre></td></tr></table></figure></p>
+<p>它先从请求上下文中取出最新的请求，如果没有传入user，那么会从session中试图取出对应的user_id，这是一种保护机制，不使用cookie，而使用session，user_id在login时会写入session，如果登陆时remember参数传入了True，那么关闭浏览器重新打开后session[‘user_id’]将不会被清除，这时候也就可以获取到了，如果登陆时没有设置remember为True，那么关闭浏览器后user_id会被设为None，则ctx.user = self.anonymous_user()，栈顶的用户为匿名用户，也就需要重新登陆了;取出了user_id，并且self.user_callback不为空，则会调用被user_loader装饰的函数，并传入user_id，在被装饰的函数中我们要根据这个user_id来查找并返回对应的用户实例，如果成功返回，那么当前请求上下文栈顶的用户就设置为返回的用户。<br>你可能会问，为什么要重载用户呢？因为http协议是无状态的，每次都会发送一个新的请求，请求上下文的栈顶会被新的请求覆盖，对应的user属性也就没了，所以需要通过reload_user重载上一次记录在session中并且未被清除的用户，重载失败则需要重新登陆，这也就是这个装饰器的作用了。<br>最后我们看下logout_user()这个方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">def logout_user():</span><br><span class="line">    &apos;&apos;&apos;</span><br><span class="line">    Logs a user out. (You do not need to pass the actual user.) This will</span><br><span class="line">    also clean up the remember me cookie if it exists.</span><br><span class="line">    &apos;&apos;&apos;</span><br><span class="line"> </span><br><span class="line">    user = _get_user()</span><br><span class="line"> </span><br><span class="line">    if &apos;user_id&apos; in session:</span><br><span class="line">        session.pop(&apos;user_id&apos;)</span><br><span class="line"> </span><br><span class="line">    if &apos;_fresh&apos; in session:</span><br><span class="line">        session.pop(&apos;_fresh&apos;)</span><br><span class="line"> </span><br><span class="line">    cookie_name = current_app.config.get(&apos;REMEMBER_COOKIE_NAME&apos;, COOKIE_NAME)</span><br><span class="line">    if cookie_name in request.cookies:</span><br><span class="line">        session[&apos;remember&apos;] = &apos;clear&apos;</span><br><span class="line">        if &apos;remember_seconds&apos; in session:</span><br><span class="line">            session.pop(&apos;remember_seconds&apos;)</span><br><span class="line"> </span><br><span class="line">    user_logged_out.send(current_app._get_current_object(), user=user)</span><br><span class="line"> </span><br><span class="line">    current_app.login_manager.reload_user()</span><br><span class="line">    return True</span><br></pre></td></tr></table></figure></p>
+<p>logout主要是清除了session和cookie中的关键参数，比如login时设置的user_id以及remember等，清除后又调用了reload_user()，根据之前的逻辑，当然不可能重载成功，因为user_id已经为None了，执行到ctx.user = self.anonymous_user()就已经结束了，其实reload_user算是这个模块中很关键的一个函数，login_manager这个类也是这个模块的核心所在，以后有时间继续研究。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/flask/" rel="tag"><i class="fa fa-tag"></i>
+ flask</a>
+          
+            <a href="/tags/web/" rel="tag"><i class="fa fa-tag"></i>
+ web</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/13/flask-login中的login-required装饰器/" rel="next" title="flask-login中的login_required装饰器">
+                <i class="fa fa-chevron-left"></i> flask-login中的login_required装饰器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/13/迁移原EasyThink的博文/" rel="prev" title="迁移原EasyThink的博文">
+                迁移原EasyThink的博文 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">顾金鑫</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#flask-login模块中user-loader装饰器引发的思考"><span class="nav-number">1.</span> <span class="nav-text">flask_login模块中user_loader装饰器引发的思考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">EasyThink By jx</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">95k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">1:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

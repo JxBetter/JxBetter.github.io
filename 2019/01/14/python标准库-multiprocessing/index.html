@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="基于并行的多进程模块 介绍 multiprocessing模块提供了大量进程接口类似于线程模块，并提供了本地和远程的并发，高效的是用子进程代替了线程，避免了GIL全局解释锁的影响，正因为这样，multiprocessing模块允许程序员充分利用多核处理器，可以在unix和windows上使用。 multiprocessing模块也包括了线程模块不具备的接口，一个只要的例子就是Pool对象，它为一个">
+<meta name="keywords" content="python library">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python标准库--multiprocessing">
+<meta property="og:url" content="http://yoursite.com/2019/01/14/python标准库-multiprocessing/index.html">
+<meta property="og:site_name" content="Easythink">
+<meta property="og:description" content="基于并行的多进程模块 介绍 multiprocessing模块提供了大量进程接口类似于线程模块，并提供了本地和远程的并发，高效的是用子进程代替了线程，避免了GIL全局解释锁的影响，正因为这样，multiprocessing模块允许程序员充分利用多核处理器，可以在unix和windows上使用。 multiprocessing模块也包括了线程模块不具备的接口，一个只要的例子就是Pool对象，它为一个">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-16T04:33:53.214Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python标准库--multiprocessing">
+<meta name="twitter:description" content="基于并行的多进程模块 介绍 multiprocessing模块提供了大量进程接口类似于线程模块，并提供了本地和远程的并发，高效的是用子进程代替了线程，避免了GIL全局解释锁的影响，正因为这样，multiprocessing模块允许程序员充分利用多核处理器，可以在unix和windows上使用。 multiprocessing模块也包括了线程模块不具备的接口，一个只要的例子就是Pool对象，它为一个">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/14/python标准库-multiprocessing/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>python标准库--multiprocessing | Easythink</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Easythink</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/14/python标准库-multiprocessing/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="顾金鑫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Easythink">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python标准库--multiprocessing
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-14 12:57:52" itemprop="dateCreated datePublished" datetime="2019-01-14T12:57:52+08:00">2019-01-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-16 12:33:53" itemprop="dateModified" datetime="2019-01-16T12:33:53+08:00">2019-01-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">6.5k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">6 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="基于并行的多进程模块"><a href="#基于并行的多进程模块" class="headerlink" title="基于并行的多进程模块"></a>基于并行的多进程模块</h1><blockquote>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><ul>
+<li>multiprocessing模块提供了大量进程接口类似于线程模块，并提供了本地和远程的并发，高效的是用子进程代替了线程，避免了GIL全局解释锁的影响，正因为这样，multiprocessing模块允许程序员充分利用多核处理器，可以在unix和windows上使用。</li>
+<li>multiprocessing模块也包括了线程模块不具备的接口，一个只要的例子就是Pool对象，它为一个函数传入多个值从而并发执行提供了方便，因为数据的分配在进程中实现。</li>
+</ul>
+<h3 id="Process-Class"><a href="#Process-Class" class="headerlink" title="Process Class"></a>Process Class</h3><p>进程大量的产出是通过创建Process对象，然后调用start()方法来实现</p>
+<pre><code>from multiprocessing import Process
+
+def f(name):
+    print(&apos;hello&apos;, name)
+
+if __name__ == &apos;__main__&apos;:
+    p = Process(target=f, args=(&apos;bob&apos;,))
+    p.start()
+    p.join()
+</code></pre><h3 id="Contexts-and-start-methods"><a href="#Contexts-and-start-methods" class="headerlink" title="Contexts and start methods"></a>Contexts and start methods</h3><blockquote>
+<p>multiprocessing模块提供了三种开启进程的方式 spawn,fork,forkserver  </p>
+<ol start="2">
+<li>spawn<br>父进程开启一个解释器进程，子进程将只从父进程继承run()时必要的资源，没必要的资源将不会继承，这个开启方法比fork,forkserver慢。<br>在unix和windows上都可用，在windows是默认方法</li>
+<li>fork<br>父进程使用os.fork()，fork一个python解释器，子进程进行时和父进程完全相同，所有资源全部继承，fork一个有多个线程的进程会存在问题。<br>只能在unix上可用，并是默认方法</li>
+<li>forkserver<br>当使用这种方式启动进程，一个服务器进程会被开启，当需要一个新的进程时，父进程连接服务器并请求fork一个新进程，服务器进程是单线程的，所以它用os.fork()是安全的，不会继承不必要的资源。<br>在支持将文件描述符通过管道传递给unix的系统中可用</li>
+</ol>
+<p>_Changed in version 3.4:_spawn在所有unix平台都可用，在windows中子进程不再继承父进程所有资源。<br>通过set_start_method()来设置启动方法，在一个程序中只能设置一次<br>set_start_method(‘spawn’)<br>或者你可以使用get_context()来选择一个上下文对象，和multiprocessing模块有着同样的接口，允许你在同一个程序中使用多个start方法<br>ctx = mp.get_context(‘spawn’)<br>ctx.Process()  </p>
+</blockquote>
+<h3 id="Exchanging-objects-between-processes"><a href="#Exchanging-objects-between-processes" class="headerlink" title="Exchanging objects between processes"></a>Exchanging objects between processes</h3><blockquote>
+<p>多进程支持进程间两种通信方式</p>
+<ol>
+<li>Queue<br>和queue.Queue类似</li>
+</ol>
+<pre><code>from multiprocessing import Process, Queue
+
+def f(q):
+    q.put([42, None, &apos;hello&apos;])
+
+if __name__ == &apos;__main__&apos;:
+    q = Queue()
+    p = Process(target=f, args=(q,))
+    p.start()
+    print(q.get())    # prints &quot;[42, None, &apos;hello&apos;]&quot;
+    p.join()
+</code></pre><p>队列是线程和进程安全的，不用自己用锁  </p>
+<ol start="4">
+<li>Pipes<br>Pipe()返回一对通过管道连接的对象，默认是全双工的  </li>
+</ol>
+<pre><code>from multiprocessing import Process, Pipe
+
+def f(conn):
+    conn.send([42, None, &apos;hello&apos;])
+    conn.close()
+
+if __name__ == &apos;__main__&apos;:
+    parent_conn, child_conn = Pipe()
+    p = Process(target=f, args=(child_conn,))
+    p.start()
+    print(parent_conn.recv())   # prints &quot;[42, None, &apos;hello&apos;]&quot;
+    p.join()
+</code></pre><p>每一个连接对象都有send(),recv()方法，如果两个进程或者线程试图同时读取或写入管道的同一端，那么管道中的数据可能会损坏，如果同时读取写入的是管道的不同端则不会有损害的危险。</p>
+</blockquote>
+<h3 id="Synchronization-between-processes"><a href="#Synchronization-between-processes" class="headerlink" title="Synchronization between processes"></a>Synchronization between processes</h3><blockquote>
+<p>multiprocessing包括了所有类似于线程的同步机制，比如可以使用锁来使得同一时刻只有一个进程输出  </p>
+<pre><code>from multiprocessing import Process, Lock
+
+def f(l, i):
+    l.acquire()
+    try:
+        print(&apos;hello world&apos;, i)
+    finally:
+        l.release()
+
+if __name__ == &apos;__main__&apos;:
+    lock = Lock()
+
+    for num in range(10):
+        Process(target=f, args=(lock, num)).start()
+</code></pre></blockquote>
+<h3 id="Sharing-state-between-processes"><a href="#Sharing-state-between-processes" class="headerlink" title="Sharing state between processes"></a>Sharing state between processes</h3><blockquote>
+<p>在多进程程序中应该避免状态的共享，如果你一定要这么做multiprocessing提供了几种方法  </p>
+<ol>
+<li>Shared memory<br>数据可以存储在共享内存中，通过Value或者Array映射  </li>
+</ol>
+<pre><code>from multiprocessing import Process, Value, Array
+
+def f(n, a):
+    n.value = 3.1415927
+    for i in range(len(a)):
+        a[i] = -a[i]
+
+if __name__ == &apos;__main__&apos;:
+    num = Value(&apos;d&apos;, 0.0)
+    arr = Array(&apos;i&apos;, range(10))
+
+    p = Process(target=f, args=(num, arr))
+    p.start()
+    p.join()
+
+    print(num.value)
+    print(arr[:])
+
+output:
+3.1415927
+[0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
+</code></pre><p>‘d’表示double双精度浮点型，’i’代表int型<br>你可以使用multiprocessing.sharedctypes模块，它支持创建任意类型并分配共享内存。5.  Server process<br>通过Manger()创建manger对象，支持的类型有list, dict, Namespace, Lock, RLock, Semaphore, BoundedSemaphore, Condition, Event, Barrier, Queue, Value and Array  </p>
+<pre><code>from multiprocessing import Process, Manager
+
+def f(d, l):
+    d[1] = &apos;1&apos;
+    d[&apos;2&apos;] = 2
+    d[0.25] = None
+    l.reverse()
+
+if __name__ == &apos;__main__&apos;:
+    with Manager() as manager:
+        d = manager.dict()
+        l = manager.list(range(10))
+
+        p = Process(target=f, args=(d, l))
+        p.start()
+        p.join()
+
+        print(d)
+        print(l)
+
+output:
+{0.25: None, 1: &apos;1&apos;, &apos;2&apos;: 2}
+[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+</code></pre><p>server process 管理器比内存共享对象更加灵活，因为它支持任意数据类型，一个管理器可以共享给在同一个网络中的进程，但是比共享内存运行要慢。</p>
+</blockquote>
+<h3 id="Using-a-pool-of-workers"><a href="#Using-a-pool-of-workers" class="headerlink" title="Using a pool of workers"></a>Using a pool of workers</h3><blockquote>
+<p>Pool类代表了工作进程池，允许将任务卸载到进程中去  </p>
+<pre><code>from multiprocessing import Pool, TimeoutError
+import time
+import os
+
+def f(x):
+    return x*x
+
+if __name__ == &apos;__main__&apos;:
+    # start 4 worker processes
+    with Pool(processes=4) as pool:
+
+        # print &quot;[0, 1, 4,..., 81]&quot;
+        print(pool.map(f, range(10)))
+
+        # print same numbers in arbitrary order
+        for i in pool.imap_unordered(f, range(10)):
+            print(i)
+
+        # evaluate &quot;f(20)&quot; asynchronously
+        res = pool.apply_async(f, (20,))      # runs in *only* one process
+        print(res.get(timeout=1))             # prints &quot;400&quot;
+
+        # evaluate &quot;os.getpid()&quot; asynchronously
+        res = pool.apply_async(os.getpid, ()) # runs in *only* one process
+        print(res.get(timeout=1))             # prints the PID of that process
+
+        # launching multiple evaluations asynchronously *may* use more processes
+        multiple_results = [pool.apply_async(os.getpid, ()) for i in range(4)]
+        print([res.get(timeout=1) for res in multiple_results])
+
+        # make a single worker sleep for 10 secs
+        res = pool.apply_async(time.sleep, (10,))
+        try:
+            print(res.get(timeout=1))
+        except TimeoutError:
+            print(&quot;We lacked patience and got a multiprocessing.TimeoutError&quot;)
+
+        print(&quot;For the moment, the pool remains available for more work&quot;)
+
+    # exiting the &apos;with&apos;-block has stopped the pool
+    print(&quot;Now the pool is closed and no longer available&quot;)
+</code></pre><p>注意，Pool的方法只应该被创建它的进程所使用。</p>
+</blockquote>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><h3 id="Process-and-exceptions"><a href="#Process-and-exceptions" class="headerlink" title="Process and exceptions"></a>Process and exceptions</h3><blockquote>
+<p>class multiprocessing.Process(group=None, target=None, name=None, args=(), kwargs={}, *, daemon=None)</p>
+<ol>
+<li>run()<br>调用traget传入的方法</li>
+<li>start()<br>开启激活进程，每个进程只能开启一次</li>
+<li>join([timeout])<br>阻塞直到所有进程都执行完毕或者到达设定的timeout时间<br>试图在进程启动之前加入进程是错误的。</li>
+<li>name<br>没有实际意义，多进程间可以使用相同的名字，但不建议这么做</li>
+<li>is_alive()<br>返回进程是否是存活状态，当进程调用start()后存活</li>
+<li>daemon<br>是否为守护进程，是布尔值，必须在start()前设置，初始值会设定成父进程对应的值<br>当进程退出时，它所有创建的守护进程都将终止<br>守护进程不允许创建子进程</li>
+<li>pid<br>返回进程id</li>
+<li>exitcode<br>返回退出状态码</li>
+<li>authkey<br>进程的身份验证密钥(字节字符串)，当multiprocessing被主进程初始化，会被os.urandom()分配一个随机的字符串，当一个进程对象被创建，它将继承父进程的认证密钥，虽然这可以通过设置authkey另一字节串改。</li>
+<li>sentinel<br>一个系统对象的数字句柄，当进程结束时，它将变成“ready”状态，你可以使用这个值来等待多个事件完成，multiprocessing.connection.wait()，否则使用join()更简单</li>
+<li>terminate()<br>终止进程，进程的后代进程不会终止——它们将成为孤立的进程<br><em>Warning:</em><br>如果在关联进程使用管道或队列时使用此方法，则管道或队列容易损坏并可能被其他进程不可用。类似地，如果进程获取了锁或信号量等，则终止它很容易导致其他进程死锁。<strong>
+</strong>start(),join(),is_alive(),terminate(),exitcode只能被进程对象(object)调用  </li>
+</ol>
+<ul>
+<li>exception multiprocessing.ProcessError<br>multiprocessing exceptions 基类</li>
+<li>exception multiprocessing.BufferTooShort<br>Connection.recv_bytes_into()，当提供的缓冲区对象太小而无法读取消息时。</li>
+<li>exception multiprocessing.AuthenticationError<br>认证错误</li>
+<li>exception multiprocessing.TimeoutError<br>超时错误__</li>
+</ul>
+</blockquote>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python-library/" rel="tag"><i class="fa fa-tag"></i>
+ python library</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/14/python标准库-queue/" rel="next" title="python标准库--queue">
+                <i class="fa fa-chevron-left"></i> python标准库--queue
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/14/算法导论——第二章、插入排序，归并排序实现/" rel="prev" title="算法导论——第二章、插入排序，归并排序实现">
+                算法导论——第二章、插入排序，归并排序实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">顾金鑫</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基于并行的多进程模块"><span class="nav-number">1.</span> <span class="nav-text">基于并行的多进程模块</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.1.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-Class"><span class="nav-number">1.1.1.</span> <span class="nav-text">Process Class</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Contexts-and-start-methods"><span class="nav-number">1.1.2.</span> <span class="nav-text">Contexts and start methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exchanging-objects-between-processes"><span class="nav-number">1.1.3.</span> <span class="nav-text">Exchanging objects between processes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Synchronization-between-processes"><span class="nav-number">1.1.4.</span> <span class="nav-text">Synchronization between processes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sharing-state-between-processes"><span class="nav-number">1.1.5.</span> <span class="nav-text">Sharing state between processes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-a-pool-of-workers"><span class="nav-number">1.1.6.</span> <span class="nav-text">Using a pool of workers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">1.2.</span> <span class="nav-text">Reference</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-and-exceptions"><span class="nav-number">1.2.1.</span> <span class="nav-text">Process and exceptions</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">EasyThink By jx</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">95k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">1:26</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
