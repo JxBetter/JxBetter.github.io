@@ -96,25 +96,20 @@
 
 
 
-  <meta name="description" content="class TreeNode:     def __init__(self, value, color=None):         self.value = value         self.parent = None         self.left = None         self.right = None         self.color = color  class R">
-<meta name="keywords" content="algorithm">
-<meta property="og:type" content="article">
-<meta property="og:title" content="算法导论——第十三章、红黑树算法实现">
-<meta property="og:url" content="http://yoursite.com/2019/01/14/算法导论——第十三章、红黑树算法实现/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Easythink">
+<meta property="og:url" content="http://yoursite.com/page/4/index.html">
 <meta property="og:site_name" content="Easythink">
-<meta property="og:description" content="class TreeNode:     def __init__(self, value, color=None):         self.value = value         self.parent = None         self.left = None         self.right = None         self.color = color  class R">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-16T04:33:53.214Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="算法导论——第十三章、红黑树算法实现">
-<meta name="twitter:description" content="class TreeNode:     def __init__(self, value, color=None):         self.value = value         self.parent = None         self.left = None         self.right = None         self.color = color  class R">
+<meta name="twitter:title" content="Easythink">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/01/14/算法导论——第十三章、红黑树算法实现/">
+  <link rel="canonical" href="http://yoursite.com/page/4/">
 
 
 
@@ -124,7 +119,7 @@
   };
 </script>
 
-  <title>算法导论——第十三章、红黑树算法实现 | Easythink</title>
+  <title>Easythink</title>
   
 
 
@@ -172,7 +167,8 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -323,9 +319,9 @@
           
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -340,7 +336,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/14/算法导论——第十三章、红黑树算法实现/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/13/flask-login中的login-required装饰器/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="顾金鑫">
@@ -357,8 +353,10 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">算法导论——第十三章、红黑树算法实现
-
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/01/13/flask-login中的login-required装饰器/" class="post-title-link" itemprop="url">flask-login中的login_required装饰器</a>
               
             
           </h1>
@@ -384,7 +382,7 @@
                 
               
 
-              <time title="创建时间：2019-01-14 13:26:52" itemprop="dateCreated datePublished" datetime="2019-01-14T13:26:52+08:00">2019-01-14</time>
+              <time title="创建时间：2019-01-13 11:40:16" itemprop="dateCreated datePublished" datetime="2019-01-13T11:40:16+08:00">2019-01-13</time>
             
 
             
@@ -418,7 +416,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
 
                 
                 
@@ -434,13 +432,6 @@
           
 
           
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             阅读次数： 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
 
           
             <div class="post-symbolscount">
@@ -453,7 +444,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">7.6k</span>
+                <span title="本文字数">956</span>
               
 
               
@@ -467,7 +458,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">7 分钟</span>
+                <span title="阅读时长">1 分钟</span>
               
             </div>
           
@@ -487,213 +478,22 @@
       
 
       
-        <blockquote>
-<pre><code>class TreeNode:
-    def __init__(self, value, color=None):
-        self.value = value
-        self.parent = None
-        self.left = None
-        self.right = None
-        self.color = color
-
-class RBT:
-    def __init__(self):
-        self.sentry = TreeNode(value=&apos;sentry&apos;, color=&apos;black&apos;)
-        self.root = self.sentry
-
-    def maximum(self, node):
-        while node.right is not self.sentry:
-            node = node.right
-        return node
-
-    def minimum(self, node):
-        while node.left is not self.sentry:
-            node = node.left
-        return node
-
-    def search(self, node, val):
-        while node is not None and val != node.value:
-            if val &lt; node.value:
-                node = node.left
-            else:
-                node = node.right
-        return node
-
-    def travel(self, node):
-        if self.root is not None:
-            if node.value != &apos;sentry&apos;:
-                print(&apos;value:&apos;, node.value, &apos;parent:&apos;, node.parent.value, &apos;color:&apos;, node.color)
-            if node.left is not None:
-                self.travel(node.left)
-            if node.right is not None:
-                self.travel(node.right)
-
-    def left_rotate(self, node):
-        t = node.right
-        node.right = t.left
-        if t.left is not self.sentry:
-            t.left.parent = node
-        t.parent = node.parent
-        if node.parent is self.sentry:
-            self.root = t
-        elif node == node.parent.left:
-            node.parent.left = t
-        elif node == node.parent.right:
-            node.parent.right = t
-        t.left = node
-        node.parent = t
-
-    def right_totate(self, node):
-        t = node.left
-        node.left = t.right
-        if t.right is not self.sentry:
-            t.right.parent = node
-        t.parent = node.parent
-        if node.parent is self.sentry:
-            self.root = t
-        elif node == node.parent.left:
-            node.parent.left = t
-        elif node == node.parent.right:
-            node.parent.right = t
-        t.right = node
-        node.parent = t
-
-    def insert(self, node):
-        s = self.sentry
-        p = self.root
-        while p is not self.sentry:
-            s = p
-            if node.value &lt; p.value:
-                p = p.left
-            elif node.value &gt;= p.value:
-                p = p.right
-        node.parent = s
-        if s is self.sentry:
-            self.root = node
-        elif node.value &lt; s.value:
-            s.left = node
-        elif node.value &gt;= s.value:
-            s.right = node
-        node.left = self.sentry
-        node.right = self.sentry
-        node.color = &apos;red&apos;
-        self.insert_fixup(node)
-
-    def insert_fixup(self, node):
-        while node.parent.color == &apos;red&apos;:
-            if node.parent is node.parent.parent.left:
-                uncle = node.parent.parent.right
-                if uncle.color == &apos;red&apos;:
-                    node.parent.color = &apos;black&apos;
-                    uncle.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    node = node.parent.parent
-                else:
-                    if node is node.parent.right:
-                        node = node.parent
-                        self.left_rotate(node)
-                    node.parent.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    self.right_totate(node.parent.parent)
-
-            elif node.parent is node.parent.parent.right:
-                uncle = node.parent.parent.left
-                if uncle and uncle.color == &apos;red&apos;:
-                    node.parent.color = &apos;black&apos;
-                    uncle.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    node = node.parent.parent
-                else:
-                    if node is node.parent.left:
-                        node = node.parent
-                        self.right_totate(node)
-                    node.parent.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    self.left_rotate(node.parent.parent)
-        self.root.color = &apos;black&apos;
-
-    def exchange_subtree(self, a, b):
-        if a.parent is self.sentry:
-            self.root = b
-        elif a is a.parent.left:
-            a.parent.left = b
-        elif a is a.parent.right:
-            a.parent.right = b
-        b.parent = a.parent
-
-    def delete(self, node):
-        t = node
-        node_old_color = t.color
-        if node.left is self.sentry:
-            x = node.right
-            self.exchange_subtree(node, node.right)
-        elif node.right is self.sentry:
-            x = node.left
-            self.exchange_subtree(node, node.left)
-        else:
-            t = self.minimum(node.right)
-            node_old_color = node.color
-            x = t.right
-            if t.parent is node:
-                x.parent = t
-            else:
-                self.exchange_subtree(t, t.right)
-                t.right = node.right
-                t.right.parent = t
-            self.exchange_subtree(node, t)
-            t.left = node.left
-            t.left.parent = t
-            t.color = node.color
-        if node_old_color == &apos;black&apos;:
-            self.delete_fixup(x)
-
-    def delete_fixup(self, node):
-        while node is not self.root and node.color == &apos;black&apos;:
-            if node is node.parent.left:
-                t = node.parent.right
-                if t.color == &apos;red&apos;:
-                    t.color = &apos;black&apos;
-                    node.parent.color = &apos;red&apos;
-                    self.left_rotate(node.parent)
-                    t = node.parent.right
-                if t.left.color == &apos;black&apos; and t.right.color == &apos;black&apos;:
-                    t.color = &apos;red&apos;
-                    node = node.parent
-                else:
-                    if t.right.color == &apos;black&apos;:
-                        t.left.color = &apos;black&apos;
-                        t.color = &apos;red&apos;
-                        self.right_totate(t)
-                        t = node.parent.right
-                    t.color = node.parent.color
-                    node.parent.color = &apos;black&apos;
-                    t.right.color = &apos;black&apos;
-                    self.left_rotate(node.parent)
-                    node = self.root
-            else:
-                t = node.parent.left
-                if t.color == &apos;red&apos;:
-                    t.color = &apos;black&apos;
-                    node.parent.color = &apos;red&apos;
-                    self.right_totate(node.parent)
-                    t = node.parent.left
-                if t.right.color == &apos;black&apos; and t.left.color == &apos;black&apos;:
-                    t.color = &apos;red&apos;
-                    node = node.parent
-                else:
-                    if t.left.color == &apos;black&apos;:
-                        t.right.color = &apos;black&apos;
-                        t.color = &apos;red&apos;
-                        self.left_rotate(t)
-                        t = node.parent.left
-                    t.color = node.parent.color
-                    node.parent.color = &apos;black&apos;
-                    t.left.color = &apos;black&apos;
-                    self.right_totate(node.parent)
-                    node = self.root
-        node.color = &apos;black&apos;
-</code></pre></blockquote>
-
+        
+          
+            <p>
+              flask-login中的login_required装饰器def login_required(func):    @wraps(func)    def decorated_view(*args, **kwargs):        if request.method in EXEMPT_MET
+              ...
+            </p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/01/13/flask-login中的login-required装饰器/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
       
     </div>
 
@@ -714,41 +514,14 @@ class RBT:
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/algorithm/" rel="tag"><i class="fa fa-tag"></i>
- algorithm</a>
-          
-        </div>
+
+      
+
       
 
       
       
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/01/14/算法导论——第十二章、二叉搜索树算法实现/" rel="next" title="算法导论——第十二章、二叉搜索树算法实现">
-                <i class="fa fa-chevron-left"></i> 算法导论——第十二章、二叉搜索树算法实现
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/01/14/python中几个高阶函数的使用/" rel="prev" title="python中几个高阶函数的使用">
-                python中几个高阶函数的使用 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -758,15 +531,18 @@ class RBT:
   </article>
 
 
-  </div>
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+  </nav>
+
 
 
           </div>
           
-
-  
-
-
 
         </div>
         
@@ -1058,10 +834,6 @@ class RBT:
 
 
   
-  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
-<script src="/js/src/post-details.js?v=6.7.0"></script>
-
-
 
   
 
@@ -1071,8 +843,6 @@ class RBT:
 
 
   
-  
-
 
 
 

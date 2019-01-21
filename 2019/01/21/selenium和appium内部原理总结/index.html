@@ -96,25 +96,25 @@
 
 
 
-  <meta name="description" content="class TreeNode:     def __init__(self, value, color=None):         self.value = value         self.parent = None         self.left = None         self.right = None         self.color = color  class R">
-<meta name="keywords" content="algorithm">
+  <meta name="description" content="selenium和appium内部原理总结 为什么会有这篇文章？前段时间学习了selenium的使用，今天开始接触appium看到appium的原理后产生了疑惑：现在的selenium是通过webdriver来操作驱动浏览器的，然而appium有一个server的概念那么为什么没有app driver这个东西呢？  selenium早期的selenium 早期的selenium主要是指seleni">
+<meta name="keywords" content="测试,selenium,appium">
 <meta property="og:type" content="article">
-<meta property="og:title" content="算法导论——第十三章、红黑树算法实现">
-<meta property="og:url" content="http://yoursite.com/2019/01/14/算法导论——第十三章、红黑树算法实现/index.html">
+<meta property="og:title" content="selenium和appium内部原理总结">
+<meta property="og:url" content="http://yoursite.com/2019/01/21/selenium和appium内部原理总结/index.html">
 <meta property="og:site_name" content="Easythink">
-<meta property="og:description" content="class TreeNode:     def __init__(self, value, color=None):         self.value = value         self.parent = None         self.left = None         self.right = None         self.color = color  class R">
+<meta property="og:description" content="selenium和appium内部原理总结 为什么会有这篇文章？前段时间学习了selenium的使用，今天开始接触appium看到appium的原理后产生了疑惑：现在的selenium是通过webdriver来操作驱动浏览器的，然而appium有一个server的概念那么为什么没有app driver这个东西呢？  selenium早期的selenium 早期的selenium主要是指seleni">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-16T04:33:53.214Z">
+<meta property="og:updated_time" content="2019-01-21T05:25:49.976Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="算法导论——第十三章、红黑树算法实现">
-<meta name="twitter:description" content="class TreeNode:     def __init__(self, value, color=None):         self.value = value         self.parent = None         self.left = None         self.right = None         self.color = color  class R">
+<meta name="twitter:title" content="selenium和appium内部原理总结">
+<meta name="twitter:description" content="selenium和appium内部原理总结 为什么会有这篇文章？前段时间学习了selenium的使用，今天开始接触appium看到appium的原理后产生了疑惑：现在的selenium是通过webdriver来操作驱动浏览器的，然而appium有一个server的概念那么为什么没有app driver这个东西呢？  selenium早期的selenium 早期的selenium主要是指seleni">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/01/14/算法导论——第十三章、红黑树算法实现/">
+  <link rel="canonical" href="http://yoursite.com/2019/01/21/selenium和appium内部原理总结/">
 
 
 
@@ -124,7 +124,7 @@
   };
 </script>
 
-  <title>算法导论——第十三章、红黑树算法实现 | Easythink</title>
+  <title>selenium和appium内部原理总结 | Easythink</title>
   
 
 
@@ -340,7 +340,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/14/算法导论——第十三章、红黑树算法实现/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/21/selenium和appium内部原理总结/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="顾金鑫">
@@ -357,7 +357,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">算法导论——第十三章、红黑树算法实现
+          <h1 class="post-title" itemprop="name headline">selenium和appium内部原理总结
 
               
             
@@ -384,24 +384,12 @@
                 
               
 
-              <time title="创建时间：2019-01-14 13:26:52" itemprop="dateCreated datePublished" datetime="2019-01-14T13:26:52+08:00">2019-01-14</time>
+              <time title="创建时间：2019-01-21 11:27:12 / 修改时间：13:25:49" itemprop="dateCreated datePublished" datetime="2019-01-21T11:27:12+08:00">2019-01-21</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-01-16 12:33:53" itemprop="dateModified" datetime="2019-01-16T12:33:53+08:00">2019-01-16</time>
               
             
           </span>
@@ -418,7 +406,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/软件测试/" itemprop="url" rel="index"><span itemprop="name">软件测试</span></a></span>
 
                 
                 
@@ -453,7 +441,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">7.6k</span>
+                <span title="本文字数">2.7k</span>
               
 
               
@@ -467,7 +455,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">7 分钟</span>
+                <span title="阅读时长">2 分钟</span>
               
             </div>
           
@@ -487,212 +475,74 @@
       
 
       
-        <blockquote>
-<pre><code>class TreeNode:
-    def __init__(self, value, color=None):
-        self.value = value
-        self.parent = None
-        self.left = None
-        self.right = None
-        self.color = color
-
-class RBT:
-    def __init__(self):
-        self.sentry = TreeNode(value=&apos;sentry&apos;, color=&apos;black&apos;)
-        self.root = self.sentry
-
-    def maximum(self, node):
-        while node.right is not self.sentry:
-            node = node.right
-        return node
-
-    def minimum(self, node):
-        while node.left is not self.sentry:
-            node = node.left
-        return node
-
-    def search(self, node, val):
-        while node is not None and val != node.value:
-            if val &lt; node.value:
-                node = node.left
-            else:
-                node = node.right
-        return node
-
-    def travel(self, node):
-        if self.root is not None:
-            if node.value != &apos;sentry&apos;:
-                print(&apos;value:&apos;, node.value, &apos;parent:&apos;, node.parent.value, &apos;color:&apos;, node.color)
-            if node.left is not None:
-                self.travel(node.left)
-            if node.right is not None:
-                self.travel(node.right)
-
-    def left_rotate(self, node):
-        t = node.right
-        node.right = t.left
-        if t.left is not self.sentry:
-            t.left.parent = node
-        t.parent = node.parent
-        if node.parent is self.sentry:
-            self.root = t
-        elif node == node.parent.left:
-            node.parent.left = t
-        elif node == node.parent.right:
-            node.parent.right = t
-        t.left = node
-        node.parent = t
-
-    def right_totate(self, node):
-        t = node.left
-        node.left = t.right
-        if t.right is not self.sentry:
-            t.right.parent = node
-        t.parent = node.parent
-        if node.parent is self.sentry:
-            self.root = t
-        elif node == node.parent.left:
-            node.parent.left = t
-        elif node == node.parent.right:
-            node.parent.right = t
-        t.right = node
-        node.parent = t
-
-    def insert(self, node):
-        s = self.sentry
-        p = self.root
-        while p is not self.sentry:
-            s = p
-            if node.value &lt; p.value:
-                p = p.left
-            elif node.value &gt;= p.value:
-                p = p.right
-        node.parent = s
-        if s is self.sentry:
-            self.root = node
-        elif node.value &lt; s.value:
-            s.left = node
-        elif node.value &gt;= s.value:
-            s.right = node
-        node.left = self.sentry
-        node.right = self.sentry
-        node.color = &apos;red&apos;
-        self.insert_fixup(node)
-
-    def insert_fixup(self, node):
-        while node.parent.color == &apos;red&apos;:
-            if node.parent is node.parent.parent.left:
-                uncle = node.parent.parent.right
-                if uncle.color == &apos;red&apos;:
-                    node.parent.color = &apos;black&apos;
-                    uncle.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    node = node.parent.parent
-                else:
-                    if node is node.parent.right:
-                        node = node.parent
-                        self.left_rotate(node)
-                    node.parent.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    self.right_totate(node.parent.parent)
-
-            elif node.parent is node.parent.parent.right:
-                uncle = node.parent.parent.left
-                if uncle and uncle.color == &apos;red&apos;:
-                    node.parent.color = &apos;black&apos;
-                    uncle.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    node = node.parent.parent
-                else:
-                    if node is node.parent.left:
-                        node = node.parent
-                        self.right_totate(node)
-                    node.parent.color = &apos;black&apos;
-                    node.parent.parent.color = &apos;red&apos;
-                    self.left_rotate(node.parent.parent)
-        self.root.color = &apos;black&apos;
-
-    def exchange_subtree(self, a, b):
-        if a.parent is self.sentry:
-            self.root = b
-        elif a is a.parent.left:
-            a.parent.left = b
-        elif a is a.parent.right:
-            a.parent.right = b
-        b.parent = a.parent
-
-    def delete(self, node):
-        t = node
-        node_old_color = t.color
-        if node.left is self.sentry:
-            x = node.right
-            self.exchange_subtree(node, node.right)
-        elif node.right is self.sentry:
-            x = node.left
-            self.exchange_subtree(node, node.left)
-        else:
-            t = self.minimum(node.right)
-            node_old_color = node.color
-            x = t.right
-            if t.parent is node:
-                x.parent = t
-            else:
-                self.exchange_subtree(t, t.right)
-                t.right = node.right
-                t.right.parent = t
-            self.exchange_subtree(node, t)
-            t.left = node.left
-            t.left.parent = t
-            t.color = node.color
-        if node_old_color == &apos;black&apos;:
-            self.delete_fixup(x)
-
-    def delete_fixup(self, node):
-        while node is not self.root and node.color == &apos;black&apos;:
-            if node is node.parent.left:
-                t = node.parent.right
-                if t.color == &apos;red&apos;:
-                    t.color = &apos;black&apos;
-                    node.parent.color = &apos;red&apos;
-                    self.left_rotate(node.parent)
-                    t = node.parent.right
-                if t.left.color == &apos;black&apos; and t.right.color == &apos;black&apos;:
-                    t.color = &apos;red&apos;
-                    node = node.parent
-                else:
-                    if t.right.color == &apos;black&apos;:
-                        t.left.color = &apos;black&apos;
-                        t.color = &apos;red&apos;
-                        self.right_totate(t)
-                        t = node.parent.right
-                    t.color = node.parent.color
-                    node.parent.color = &apos;black&apos;
-                    t.right.color = &apos;black&apos;
-                    self.left_rotate(node.parent)
-                    node = self.root
-            else:
-                t = node.parent.left
-                if t.color == &apos;red&apos;:
-                    t.color = &apos;black&apos;
-                    node.parent.color = &apos;red&apos;
-                    self.right_totate(node.parent)
-                    t = node.parent.left
-                if t.right.color == &apos;black&apos; and t.left.color == &apos;black&apos;:
-                    t.color = &apos;red&apos;
-                    node = node.parent
-                else:
-                    if t.left.color == &apos;black&apos;:
-                        t.right.color = &apos;black&apos;
-                        t.color = &apos;red&apos;
-                        self.left_rotate(t)
-                        t = node.parent.left
-                    t.color = node.parent.color
-                    node.parent.color = &apos;black&apos;
-                    t.left.color = &apos;black&apos;
-                    self.right_totate(node.parent)
-                    node = self.root
-        node.color = &apos;black&apos;
-</code></pre></blockquote>
+        <h1 id="selenium和appium内部原理总结"><a href="#selenium和appium内部原理总结" class="headerlink" title="selenium和appium内部原理总结"></a>selenium和appium内部原理总结</h1><blockquote>
+<p>为什么会有这篇文章？<br>前段时间学习了selenium的使用，今天开始接触appium看到appium的原理后产生了疑惑：<br>现在的selenium是通过webdriver来操作驱动浏览器的，然而appium有一个server的概念<br>那么为什么没有app driver这个东西呢？</p>
+</blockquote>
+<h2 id="selenium"><a href="#selenium" class="headerlink" title="selenium"></a>selenium</h2><h3 id="早期的selenium"><a href="#早期的selenium" class="headerlink" title="早期的selenium"></a>早期的selenium</h3><blockquote>
+<p>早期的selenium主要是指selenium1.0的版本，<br>这个版本主要由Selenium IDE + Selenium Grid + SeleniumRC组成<br>seleniumRC就是后来被webdriver取代的一个代理server<br>RC == Remote Control 远程控制<br>早期Selenium 引入了 Remote Control Server 这样一个代理 Server，JavaScript 脚本注入和与 Server 通讯都通过这个代理 Server 来进行，JavasScript可以获取并调用页面的任何元素，Selenium启动一个Server，将操作Web元素的API调用转化为一段段JavaScript，在Selenium内核启动浏览器之后注入这段JS<br>缺点：但是JS注入速度不理想，稳定性大大依赖于Selenium内核对API翻译成的JS质量高低<br>引入代理Remote Control Server是因为“同源策略”的限制，通过这个代理服务器来“欺骗”远程Server，达到使其以为是从同一个地方load代码以正确返回请求数据的效果</p>
+</blockquote>
+<h4 id="seleniumRC的原理"><a href="#seleniumRC的原理" class="headerlink" title="seleniumRC的原理"></a>seleniumRC的原理</h4><ol>
+<li>Selenium RC Server 启动一个浏览器（或是已经使用中），并注入js代码</li>
+<li>将测试脚本代码传到客户端的 Selenium-Core 中</li>
+<li>Selenium-Core 翻译并解析执行用户录制的操作</li>
+<li>让代理 Server 进行通讯</li>
+<li>Remote Control Server 负责跟远程 Web 应用服务器进行通讯<h4 id="seleniumRC的组成"><a href="#seleniumRC的组成" class="headerlink" title="seleniumRC的组成"></a>seleniumRC的组成</h4></li>
+<li>Selenium Server(Launcher、Http Proxy、Selenium Core)</li>
+<li>Client Libraries(用来控制server)<h4 id="seleniumRC的工作流程"><a href="#seleniumRC的工作流程" class="headerlink" title="seleniumRC的工作流程"></a>seleniumRC的工作流程</h4></li>
+<li>测试用例通过Client Libraries的接口向Selenium Server发送Http请求，要求和Selenium Server建立连接</li>
+<li>Selenium Server的Launcher启动浏览器，把Selenium Core加载入浏览器页面中，并发浏览器的代理设置为Selenium Server的Http Proxy。</li>
+<li>测试用例通过Client Libraries的接口向Selenium Server发送Http请求，Selenium Server对请求进行解析，然后通过Http Proxy发送JS命令通知Selenium Core执行操作浏览器的动作</li>
+<li>Selenium Core接收到指令后，执行操作</li>
+<li>浏览器收到新的页面请求信息，于是发送Http请求，请求新的web页面。Selenium Server会接收到所有由它启动的浏览器发动的请求</li>
+<li>Selenium Server接收到浏览器发送的Http请求后，自己重组Http请求，获取对应的web页面</li>
+<li>Selenium Server的Http Proxy把接收的Web页面返回给浏览器</li>
+</ol>
+<h3 id="现在的selenium"><a href="#现在的selenium" class="headerlink" title="现在的selenium"></a>现在的selenium</h3><blockquote>
+<p>selenium3.0以后移除了seleniumRC，取而代之的是webdriver<br>用一张图来展示selenium3.0的运行原理<br>![image][pic1]<br>这里讲到的是测试脚本和浏览器的交互，客户端开始运行驱动浏览器的脚本的时候，这时浏览器收到请求开始启动并开启侦听端口，并自动创建session，保持浏览器和对应客户端的会话连接,然后客户端运行脚本，向浏览器发送http请求，浏览器解析请求，根据脚本内容做出相应操作，返回response。这时客户端根据response选择结束还是继续执行<br>tips:</p>
+<ol>
+<li>webdriver操作浏览器、页面采用的协议：the webdriver wire protocol</li>
+<li>Client和Server的通信协议：HTTP</li>
+<li>HTTP传输的数据内容为遵循WP协议json格式数据</li>
+</ol>
+</blockquote>
+<h2 id="appium"><a href="#appium" class="headerlink" title="appium"></a>appium</h2><h3 id="appium和selenium之间的不同"><a href="#appium和selenium之间的不同" class="headerlink" title="appium和selenium之间的不同"></a>appium和selenium之间的不同</h3><blockquote>
+<p>appium本身就是一个server，而selenium废弃了server，用webdriver来驱动浏览器</p>
+</blockquote>
+<h3 id="appium工作原理"><a href="#appium工作原理" class="headerlink" title="appium工作原理"></a>appium工作原理</h3><blockquote>
+<p>当开启appium服务器的同时就开启了监听端口；我们运行脚本的时候，调用任何的appiumAPI，都会向Appium Server端post一条HTTP请求，请求内容就是根据webdriver wire protocol协议规定的一条JSON格式的数据；Appium Server端接收到请求后，解析出JSON数据并发送到手机端；手机端上已经由BootStrap.jar(iOS为BootStrip.js)开启的socket服务器监听相应的端口，BootStrap.jar在appium每个session第一次访问手机端的时候会自动安装；手机端接收到对应的请求后，通过BootStrap.jar翻译成UIAutomator能执行的命令，然后通过UIAutomator处理并操作APP完成测试。</p>
+</blockquote>
+<h3 id="appium的几个概念"><a href="#appium的几个概念" class="headerlink" title="appium的几个概念"></a>appium的几个概念</h3><blockquote>
+<ol>
+<li>appium/appium server<blockquote>
+<p>一般所说的appium其实是一个基于node.js的web服务器，它是测试脚本和设备端交互的桥梁<br>用npm install -g appium 安装的是命令行的没有界面的appium server</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="2">
+<li>appium GUI<blockquote>
+<p>它是把没有界面的appium server封装出了一个图形界面，方便操作，但是现在已经被appium desktop所取代</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="3">
+<li>appium Desktop<blockquote>
+<p>它是一款适用于Mac，Windows和Linux的开源应用程序，它以美观而灵活的用户界面为您提供appium server的强大功能</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="4">
+<li>appium client<blockquote>
+<p>第1点中说到，appium其实是一个sweb server，server是接收请求来操作设备端的app的，既然有了server那么一定会有client<br>这个client就是我们写测试脚本时导入的包<br>python中可以运行 pip install Appium-Python-Client 来安装</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
 
       
     </div>
@@ -716,8 +566,14 @@ class RBT:
       
         <div class="post-tags">
           
-            <a href="/tags/algorithm/" rel="tag"><i class="fa fa-tag"></i>
- algorithm</a>
+            <a href="/tags/测试/" rel="tag"><i class="fa fa-tag"></i>
+ 测试</a>
+          
+            <a href="/tags/selenium/" rel="tag"><i class="fa fa-tag"></i>
+ selenium</a>
+          
+            <a href="/tags/appium/" rel="tag"><i class="fa fa-tag"></i>
+ appium</a>
           
         </div>
       
@@ -730,8 +586,8 @@ class RBT:
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/14/算法导论——第十二章、二叉搜索树算法实现/" rel="next" title="算法导论——第十二章、二叉搜索树算法实现">
-                <i class="fa fa-chevron-left"></i> 算法导论——第十二章、二叉搜索树算法实现
+              <a href="/2019/01/19/Dockerfile部署web应用/" rel="next" title="Dockerfile部署web应用">
+                <i class="fa fa-chevron-left"></i> Dockerfile部署web应用
               </a>
             
           </div>
@@ -739,10 +595,6 @@ class RBT:
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/01/14/python中几个高阶函数的使用/" rel="prev" title="python中几个高阶函数的使用">
-                python中几个高阶函数的使用 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -787,8 +639,17 @@ class RBT:
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -888,6 +749,23 @@ class RBT:
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#selenium和appium内部原理总结"><span class="nav-number">1.</span> <span class="nav-text">selenium和appium内部原理总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#selenium"><span class="nav-number">1.1.</span> <span class="nav-text">selenium</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#早期的selenium"><span class="nav-number">1.1.1.</span> <span class="nav-text">早期的selenium</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#seleniumRC的原理"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">seleniumRC的原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#seleniumRC的组成"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">seleniumRC的组成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#seleniumRC的工作流程"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">seleniumRC的工作流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#现在的selenium"><span class="nav-number">1.1.2.</span> <span class="nav-text">现在的selenium</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#appium"><span class="nav-number">1.2.</span> <span class="nav-text">appium</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#appium和selenium之间的不同"><span class="nav-number">1.2.1.</span> <span class="nav-text">appium和selenium之间的不同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#appium工作原理"><span class="nav-number">1.2.2.</span> <span class="nav-text">appium工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#appium的几个概念"><span class="nav-number">1.2.3.</span> <span class="nav-text">appium的几个概念</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
