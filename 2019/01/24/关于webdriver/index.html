@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="webdriver协议 webdriver协议是一套json格式的规范，本身是基于http协议的这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的接口作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应selenium中的webdriver就是浏览器驱动，比">
+  <meta name="description" content="webdriver协议 webdriver协议是一套json格式的规范，本身是基于http协议的这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的每一个操作作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应selenium中的webdriver就是浏览器驱">
 <meta name="keywords" content="测试">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于webdriver">
 <meta property="og:url" content="http://yoursite.com/2019/01/24/关于webdriver/index.html">
 <meta property="og:site_name" content="Easythink">
-<meta property="og:description" content="webdriver协议 webdriver协议是一套json格式的规范，本身是基于http协议的这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的接口作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应selenium中的webdriver就是浏览器驱动，比">
+<meta property="og:description" content="webdriver协议 webdriver协议是一套json格式的规范，本身是基于http协议的这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的每一个操作作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应selenium中的webdriver就是浏览器驱">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-24T07:44:36.046Z">
+<meta property="og:updated_time" content="2019-01-24T07:57:55.845Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于webdriver">
-<meta name="twitter:description" content="webdriver协议 webdriver协议是一套json格式的规范，本身是基于http协议的这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的接口作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应selenium中的webdriver就是浏览器驱动，比">
+<meta name="twitter:description" content="webdriver协议 webdriver协议是一套json格式的规范，本身是基于http协议的这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的每一个操作作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应selenium中的webdriver就是浏览器驱">
 
 
 
@@ -384,7 +384,7 @@
                 
               
 
-              <time title="创建时间：2019-01-24 14:56:30 / 修改时间：15:44:36" itemprop="dateCreated datePublished" datetime="2019-01-24T14:56:30+08:00">2019-01-24</time>
+              <time title="创建时间：2019-01-24 14:56:30 / 修改时间：15:57:55" itemprop="dateCreated datePublished" datetime="2019-01-24T14:56:30+08:00">2019-01-24</time>
             
 
             
@@ -441,7 +441,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">1.9k</span>
+                <span title="本文字数">2.1k</span>
               
 
               
@@ -476,7 +476,7 @@
 
       
         <h2 id="webdriver协议"><a href="#webdriver协议" class="headerlink" title="webdriver协议"></a>webdriver协议</h2><blockquote>
-<p>webdriver协议是一套json格式的规范，本身是基于http协议的<br>这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的接口<br>作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应<br>selenium中的webdriver就是浏览器驱动，比如ChromeDriver等，驱动实现了webdriver协议<br>appium中的webdriver是appium server<br>通俗地说：<br>由于客户端脚本(java, python, ruby)不能直接与浏览器/手机通信，这时候可以把webdriver server当做一个翻译器，它可以把客户端代码翻译成浏览器/手机可以识别的代码(比如js)，客户端通过http请求向webdriver server发送restful的请求，webdriver server翻译成浏览器/手机懂得脚本传给浏览器/手机，浏览器/手机把执行的结果返回给webdriver server,webdriver server把返回的结果做了一些封装(JSON Wire protocol)，然后返回给客户端脚本，客户端根据返回值就能判断对浏览器/手机的操作是否执行成功</p>
+<p>webdriver协议是一套json格式的规范，本身是基于http协议的<br>这个协议规定了每个操作对应的数据格式，webdriver作为一个服务端，需要实现协议中的每一个操作<br>作为客户端的库文件需要封装好给用户使用的api，每个api对应着协议中不同的数据格式，这些数据封装在http中的body中，数据格式内容和具体的操作一一对应<br>selenium中的webdriver就是浏览器驱动，比如ChromeDriver等，驱动实现了webdriver协议<br>appium中的webdriver是appium server<br>通俗地说：<br>由于客户端脚本(java, python, ruby)不能直接与浏览器/手机通信，这时候可以把webdriver server当做一个翻译器，它可以把客户端代码翻译成浏览器/手机可以识别的代码(比如js)，客户端通过http请求向webdriver server发送restful的请求，webdriver server翻译成浏览器/手机懂得脚本传给浏览器/手机，浏览器/手机把执行的结果返回给webdriver server,webdriver server把返回的结果做了一些封装(JSON Wire protocol)，然后返回给客户端脚本，客户端根据返回值就能判断对浏览器/手机的操作是否执行成功<br>协议就像是一个抽象类，规定了方法，以及触发方法所需要的数据格式和内容，但是没有具体实现；服务端需要具体去实现这些方法；客户端则需要按照协议规定的数据格式和内容去封装提供给用户的api</p>
 </blockquote>
 <h2 id="selenium中的WebDriver类"><a href="#selenium中的WebDriver类" class="headerlink" title="selenium中的WebDriver类"></a>selenium中的WebDriver类</h2><blockquote>
 <p>selenium作为一个客户端，提供给用户的接口基本都在selenium/webdriver/remote/webdriver.py中的WebDriver类中实现<br>这个类是selenium中所有关于浏览器driver类的基类<br>截取Chrome webdriver类中初始化的一段代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">try:</span><br><span class="line">    RemoteWebDriver.__init__(</span><br><span class="line">        self,</span><br><span class="line">        command_executor=ChromeRemoteConnection(</span><br><span class="line">            remote_server_addr=self.service.service_url,</span><br><span class="line">            keep_alive=keep_alive),</span><br><span class="line">        desired_capabilities=desired_capabilities)</span><br><span class="line">except Exception:</span><br><span class="line">    self.quit()</span><br><span class="line">    raise</span><br><span class="line">self._is_remote = False</span><br></pre></td></tr></table></figure></p>
@@ -494,6 +494,9 @@
 <li>浏览器驱动/appium server——作为服务端</li>
 <li>浏览器/手机——作为服务端操作的对象</li>
 </ol>
+<h3 id="客户端包的作用"><a href="#客户端包的作用" class="headerlink" title="客户端包的作用"></a>客户端包的作用</h3><blockquote>
+<p>屏蔽有关协议的内容，让用户不必关心这些细节，只需使用提供给用户的api即可完成相应的操作</p>
+</blockquote>
 
       
     </div>
@@ -709,7 +712,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#webdriver协议"><span class="nav-number">1.</span> <span class="nav-text">webdriver协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#selenium中的WebDriver类"><span class="nav-number">2.</span> <span class="nav-text">selenium中的WebDriver类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#appium中的WebDriver类"><span class="nav-number">3.</span> <span class="nav-text">appium中的WebDriver类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webdriver中的三个角色"><span class="nav-number">4.1.</span> <span class="nav-text">webdriver中的三个角色</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#webdriver协议"><span class="nav-number">1.</span> <span class="nav-text">webdriver协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#selenium中的WebDriver类"><span class="nav-number">2.</span> <span class="nav-text">selenium中的WebDriver类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#appium中的WebDriver类"><span class="nav-number">3.</span> <span class="nav-text">appium中的WebDriver类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webdriver中的三个角色"><span class="nav-number">4.1.</span> <span class="nav-text">webdriver中的三个角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端包的作用"><span class="nav-number">4.2.</span> <span class="nav-text">客户端包的作用</span></a></li></ol></li></ol></div>
             
 
           </div>
