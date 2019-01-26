@@ -81,7 +81,7 @@
   <entry>
     <title><![CDATA[各种日常总结]]></title>
     <url>%2F2019%2F01%2F21%2F%E5%90%84%E7%A7%8D%E6%97%A5%E5%B8%B8%E6%80%BB%E7%BB%93%2F</url>
-    <content type="text"><![CDATA[linux下查找java的安装路径时间: 2019年1月21日15:03:05 配置appium环境需要添加JAVA_HOME这个环境变量，但是忘记了安装的路径which java、whereis java都只能找到java的执行路径可行的方式: 12ls -lrt /usr/bin/javals -lrt /etc/alternatives/java 统计一个文件夹下的所有文件，不包括子文件夹下的文件时间: 2019年1月25日16:12:53 12ls -l | wc -l# 数量需要减1 android sdk 关于jdk版本问题 之前装了jdk11版本的java，但是运行uiautomatorviewer之类的命令时会报错，无法运行java虚拟机，原因是jdk版本不兼容，安装成jdk1.8版本就可以了下载jdk1.8，并安装，然后更改环境变量JAVA_HOME即可]]></content>
+    <content type="text"><![CDATA[linux下查找java的安装路径时间: 2019年1月21日15:03:05 配置appium环境需要添加JAVA_HOME这个环境变量，但是忘记了安装的路径which java、whereis java都只能找到java的执行路径可行的方式: 12ls -lrt /usr/bin/javals -lrt /etc/alternatives/java 统计一个文件夹下的所有文件，不包括子文件夹下的文件时间: 2019年1月25日16:12:53 12ls -l | wc -l# 数量需要减1 android sdk 关于jdk版本问题时间: 2019/1/26 下午11:22:19 之前装了jdk11版本的java，但是运行uiautomatorviewer之类的命令时会报错，无法运行java虚拟机，原因是jdk版本不兼容，安装成jdk1.8版本就可以了下载jdk1.8，并安装，然后更改环境变量JAVA_HOME即可]]></content>
       <categories>
         <category>总结</category>
       </categories>
